@@ -7,7 +7,7 @@
         xmlns:converter="clr-namespace:wpfFeladatok.Converters"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
-        >
+        Background="{StaticResource WindowBackgroundColor}">
     <Window.Resources>
         <converter:NotNullOrEmptyToVisibilityConverter x:Key="NotNullOrEmptyToVisibilityConverter"/>
     </Window.Resources>
@@ -20,13 +20,13 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
-        <TextBox Margin="10 0 5 0" VerticalContentAlignment="Center" Text="{Binding TextContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="5" Grid.Row="0" Grid.Column="0" BorderBrush="Gray" BorderThickness="1" />
-        <Border Margin="5 0 5 0" Grid.Row="0" Grid.Column="1" BorderBrush="Gray" BorderThickness="1">
+        <TextBox Background="{StaticResource ControlsBackgroundColor}" Margin="10 0 5 0" VerticalContentAlignment="Center" Text="{Binding TextContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="5" Grid.Row="0" Grid.Column="0" BorderBrush="Gray" BorderThickness="1" />
+        <Border Background="{StaticResource ControlsBackgroundColor}" Margin="5 0 5 0" Grid.Row="0" Grid.Column="1" BorderBrush="Gray" BorderThickness="1">
             <TextBlock Padding="5" VerticalAlignment="Center" Text="{Binding TextContent}" />
         </Border>
-        <Label Margin="5 0 10 0" Grid.Row="0" Grid.Column="2" BorderBrush="Gray" BorderThickness="1">
+        <Label Background="{StaticResource ControlsBackgroundColor}" Margin="5 0 10 0" Grid.Row="0" Grid.Column="2" BorderBrush="Gray" BorderThickness="1">
             <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-                <Image Source="/Resources/Images/test.jpg" Visibility="{Binding TextContent, Converter={StaticResource NotNullOrEmptyToVisibilityConverter}}">
+                <Image Source="{StaticResource ImageUrl}" Visibility="{Binding TextContent, Converter={StaticResource NotNullOrEmptyToVisibilityConverter}}">
                     <Image.ToolTip>
                         <ToolTip>
                             <TextBlock Text="{Binding TextContent}" />
