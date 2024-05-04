@@ -16,6 +16,17 @@
     <Resource Include="Resources\Images\test.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Page Remove="Resources\Themes\Dark\ColorResources.xaml" />
+    <Resource Include="Resources\Themes\Dark\ColorResources.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Page Remove="Resources\Themes\Light\ColorResources.xaml" />
+    <Resource Include="Resources\Themes\Light\ColorResources.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,7 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Color x:Key="WindowBackgroundColor">#FAFAD2</Color>
+    <SolidColorBrush x:Key="ControlsBackgroundColor" Color="LightBlue"/>
+    <Color x:Key="WindowBackgroundAnimationColorDark">#BDB76B</Color>
+    <Color x:Key="WindowBackgroundAnimationColorLight">#FAFAD2</Color>
+</ResourceDictionary>
