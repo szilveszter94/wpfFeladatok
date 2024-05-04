@@ -7,6 +7,8 @@ namespace wpfFeladatok.ViewModels
 {
     public class MainWindowViewModel : BaseViewModel
     {
+        public int MaxValue { get; } = 255;
+        public int MinValue { get; } = 0;
         private string _textContent = "";
         private bool _isAnimationCheckBoxChecked;
         private bool _isThemeChangeEnableCheckBoxChecked;
@@ -14,6 +16,9 @@ namespace wpfFeladatok.ViewModels
         private bool _isSwitchThemeEnabled;
         private DateTime _currentTime = DateTime.Now;
         private DispatcherTimer _timer;
+        private int _redValue;
+        private int _greenValue;
+        private int _blueValue;
         public ICommand ShowMessage { get; }
         public ICommand ShowLoginWindow { get; }
         
@@ -117,6 +122,45 @@ namespace wpfFeladatok.ViewModels
                 if (_isPopupActive != value)
                 {
                     _isPopupActive = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        
+        public int RedValue
+        {
+            get { return _redValue; }
+            set
+            {
+                if (_redValue != value)
+                {
+                    _redValue = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        
+        public int GreenValue
+        {
+            get { return _greenValue; }
+            set
+            {
+                if (_greenValue != value)
+                {
+                    _greenValue = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        
+        public int BlueValue
+        {
+            get { return _blueValue; }
+            set
+            {
+                if (_blueValue != value)
+                {
+                    _blueValue = value;
                     OnPropertyChanged();
                 }
             }

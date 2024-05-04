@@ -14,6 +14,9 @@
         <converter:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
         <converter:BooleanConverterToOpenClosedText x:Key="BooleanConverterToOpenClosedText"/>
         <converter:DateTimeConverterToFormattedString x:Key="DateTimeConverterToFormattedString"/>
+        <converter:RgbToColorConverter x:Key="RgbToColorConverter" />
+        <converter:RgbToThicknessConverter x:Key="RgbToThicknessConverter" />
+        <converter:SingleColorValueConverter x:Key="SingleColorValueConverter" />
         <Storyboard x:Key="BackgroundAnimation">
             <ColorAnimation Storyboard.TargetName="WindowContent" Storyboard.TargetProperty="Background.Color"
                             From="{DynamicResource WindowBackgroundAnimationColorDark}" 
@@ -39,6 +42,8 @@
                 <RowDefinition Height="40" />
                 <RowDefinition Height="50" />
                 <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="30" />
             </Grid.RowDefinitions>
             <TextBox Foreground="{DynamicResource TextColorDark}" Background="{DynamicResource ControlsBackgroundColor}" Margin="10 0 5 0" VerticalContentAlignment="Center" Text="{Binding TextContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="5" Grid.Row="0" Grid.Column="0" BorderBrush="Gray" BorderThickness="1" />
             <Border Background="{DynamicResource ControlsBackgroundColor}" Margin="5 0 5 0" Grid.Row="0" Grid.Column="1" BorderBrush="Gray" BorderThickness="1">
@@ -86,12 +91,69 @@
             <CheckBox Foreground="{DynamicResource TextColorLight}" IsChecked="{Binding IsThemeChangeEnableCheckBoxChecked}" VerticalAlignment="Center" Content="Enable theme switching" Margin="5" Grid.Row="2" Grid.Column="1" />
             <CheckBox Foreground="{DynamicResource TextColorLight}" Command="{Binding SwitchTheme}"
                       CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}" IsEnabled="{Binding IsSwitchThemeEnabled}" VerticalAlignment="Center" Content="Switch theme" Margin="5" Grid.Row="2" Grid.Column="2" />
-        </Grid>
-        <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="1">
-        <Grid  Height="40" HorizontalAlignment="Stretch">
-            <TextBlock Foreground="{DynamicResource TextColorLight}" Text="{Binding Status}" Padding="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <TextBlock Foreground="{DynamicResource TextColorLight}" Text="{Binding CurrentTime, Converter={StaticResource DateTimeConverterToFormattedString}}" Padding="5" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-        </Grid>
+            <Grid Margin="10 0 5 0" Grid.Row="3" Grid.Column="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="5*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Foreground="{DynamicResource TextColorLight}" Grid.Column="0" Text="Red"/>
+                <Slider Value="{Binding RedValue, Mode=TwoWay}" Maximum="{Binding MaxValue}" Minimum="{Binding MinValue}" Grid.Column="1" />
+                <TextBlock Foreground="{DynamicResource TextColorLight}" HorizontalAlignment="Right" Grid.Column="2" Text="{Binding RedValue}"/>
+            </Grid>
+            <Grid Margin="5 0 5 0" Grid.Row="3" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="5*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Foreground="{DynamicResource TextColorLight}" Grid.Column="0" Text="Green"/>
+                <Slider Value="{Binding GreenValue, Mode=TwoWay}" Maximum="{Binding MaxValue}" Minimum="{Binding MinValue}" Grid.Column="1" />
+                <TextBlock Foreground="{DynamicResource TextColorLight}" HorizontalAlignment="Right" Grid.Column="2" Text="{Binding GreenValue}"/>
+            </Grid>
+            <Grid Margin="5 0 10 0" Grid.Row="3" Grid.Column="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="5*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Foreground="{DynamicResource TextColorLight}" Grid.Column="0" Text="Blue"/>
+                <Slider Value="{Binding BlueValue, Mode=TwoWay}" Maximum="{Binding MaxValue}" Minimum="{Binding MinValue}" Grid.Column="1" />
+                <TextBlock Foreground="{DynamicResource TextColorLight}" HorizontalAlignment="Right" Grid.Column="2" Text="{Binding BlueValue}"/>
+            </Grid>
+            <Grid Grid.Column="0" Grid.Row="4">
+                <ProgressBar Name="RedProgressBar" Foreground="{Binding RedValue, Converter={StaticResource SingleColorValueConverter}, ConverterParameter=Red}" Value="{Binding RedValue}" Minimum="{Binding MinValue}" Maximum="{Binding MaxValue}" Margin="10, 0, 5, 0" />
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding ElementName=RedProgressBar, Path=Value, StringFormat={}Red value {0}}"/>
+            </Grid>
+            <Grid Grid.Column="1" Grid.Row="4">
+                <ProgressBar Name="GreenProgressBar" Foreground="{Binding GreenValue, Converter={StaticResource SingleColorValueConverter}, ConverterParameter=Green}" Value="{Binding GreenValue}" Maximum="{Binding MaxValue}" Minimum="{Binding MinValue}" Margin="5, 0, 5, 0" />
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding ElementName=GreenProgressBar, Path=Value, StringFormat={}Green value {0}}"/>
+            </Grid>
+            <Grid Grid.Column="2" Grid.Row="4">
+                <ProgressBar Name="BlueProgressBar" Foreground="{Binding BlueValue, Converter={StaticResource SingleColorValueConverter}, ConverterParameter=Blue}" Value="{Binding BlueValue}" Maximum="{Binding MaxValue}" Minimum="{Binding MinValue}" Margin="5, 0, 10, 0" />
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding ElementName=BlueProgressBar, Path=Value, StringFormat={}Blue value {0}}"/>
+            </Grid>
+            </Grid>
+        <Border Grid.Row="1">
+            <Border.BorderBrush>
+                <MultiBinding Converter="{StaticResource RgbToColorConverter}">
+                    <Binding Path="RedValue" />
+                    <Binding Path="GreenValue" />
+                    <Binding Path="BlueValue" />
+                    <Binding Source="{x:Static Brushes.Gray}" FallbackValue="{x:Static Brushes.Gray}" />
+                </MultiBinding>
+            </Border.BorderBrush>
+            <Border.BorderThickness>
+                <MultiBinding Converter="{StaticResource RgbToThicknessConverter}">
+                    <Binding Path="RedValue" />
+                    <Binding Path="GreenValue" />
+                    <Binding Path="BlueValue" />
+                </MultiBinding>
+            </Border.BorderThickness>
+            <Grid Height="40" HorizontalAlignment="Stretch">
+                <TextBlock Foreground="{DynamicResource TextColorLight}" Text="{Binding Status}" Padding="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <TextBlock Foreground="{DynamicResource TextColorLight}" Text="{Binding CurrentTime, Converter={StaticResource DateTimeConverterToFormattedString}}" Padding="5" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            </Grid>
         </Border>
         <Popup Grid.Row="0" IsOpen="{Binding IsPopupActive}" PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=Window}}" Placement="Center">
             <Grid>
@@ -113,7 +175,7 @@
                         </Style.Triggers>
                     </Style>
                 </Grid.Resources>
-                <Border Background="Wheat" Width="200" Height="200" BorderBrush="Gray">
+                <Border Background="Wheat" Width="200" Height="200" BorderBrush="Gray" BorderThickness="1">
                     <TextBlock Text="Hello Popup" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Center">
                         <TextBlock.Triggers>
                             <EventTrigger RoutedEvent="MouseEnter">
