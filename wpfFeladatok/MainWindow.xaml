@@ -13,7 +13,6 @@
         <converter:NotNullOrEmptyToVisibilityConverter x:Key="NotNullOrEmptyToVisibilityConverter"/>
         <converter:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
         <converter:BooleanConverterToOpenClosedText x:Key="BooleanConverterToOpenClosedText"/>
-        <converter:DateTimeConverterToFormattedString x:Key="DateTimeConverterToFormattedString"/>
         <converter:RgbToColorConverter x:Key="RgbToColorConverter" />
         <converter:RgbToThicknessConverter x:Key="RgbToThicknessConverter" />
         <converter:SingleColorValueConverter x:Key="SingleColorValueConverter" />
@@ -152,7 +151,7 @@
             </Border.BorderThickness>
             <Grid Height="40" HorizontalAlignment="Stretch">
                 <TextBlock Foreground="{DynamicResource TextColorLight}" Text="{Binding Status}" Padding="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <TextBlock Foreground="{DynamicResource TextColorLight}" Text="{Binding CurrentTime, Converter={StaticResource DateTimeConverterToFormattedString}}" Padding="5" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                <TextBlock Foreground="{DynamicResource TextColorLight}" Text="{Binding CurrentTime, StringFormat={}Current time: {0:yyyy-MM-dd HH:mm:ss}}" Padding="5" HorizontalAlignment="Right" VerticalAlignment="Center"/>
             </Grid>
         </Border>
         <Popup Grid.Row="0" IsOpen="{Binding IsPopupActive}" PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=Window}}" Placement="Center">
