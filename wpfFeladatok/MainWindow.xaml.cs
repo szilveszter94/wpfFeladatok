@@ -2,7 +2,6 @@
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Data;
 using wpfFeladatok.ViewModels;
 
 namespace wpfFeladatok

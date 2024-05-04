@@ -7,9 +7,22 @@ namespace wpfFeladatok.ViewModels
     public class MainWindowViewModel : BaseViewModel
     {
         private string _textContent = "";
-        private bool _isToggleActive = false;
-        public ICommand ShowMessage;
+        private bool _isPopupActive;
+        public ICommand ShowMessage { get; }
+        public ICommand ShowLoginWindow { get; }
+        
+        private string _status = "";
 
+        public string Status
+        {
+            get { return _status; }
+            set
+            {
+                _status = value;
+                OnPropertyChanged();
+            }
+        }
+        
         public string TextContent
         {
             get { return _textContent; }
@@ -23,32 +36,65 @@ namespace wpfFeladatok.ViewModels
             }
         }
 
-        public bool IsToggleActive
+        public bool IsPopupActive
         {
-            get { return _isToggleActive; }
+            get { return _isPopupActive; }
             set
             {
-                if (_isToggleActive != value)
+                if (_isPopupActive != value)
                 {
-                    _isToggleActive = value;
+                    _isPopupActive = value;
                     OnPropertyChanged();
                 }
             }
         }
+        
 
         public MainWindowViewModel()
         {
             ShowMessage = new RelayCommand(ShowMessageAction(), CanShowMessage);
+            ShowLoginWindow = new RelayCommand(ShowLoginView(), CanShowMessage);
+            Mediator.Mediator.LoginStatusChanged += UpdateStatus;
         }
 
-        public static Action<object> ShowMessageAction()
+        private Action<object?> ShowMessageAction()
         {
-            return (obj) => MessageBox.Show("Operation has completed successfully", "Message");
+            return (obj) => MessageBox.Show("Operation has completed successfully");
+        }
+        
+        private Action<object?> ShowLoginView()
+        {
+            return (obj) =>
+            {
+                try
+                {
+                    var loginViewModel = new LoginViewModel();
+                    var loginWindow = new LoginWindow(loginViewModel);
+
+                    var mainWindow = Application.Current.MainWindow;
+                    if (mainWindow != null)
+                    {
+                        loginWindow.Owner = mainWindow;
+                        loginWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    }
+
+                    loginWindow.ShowDialog();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            };
         }
 
-        private bool CanShowMessage(object parameter)
+        private bool CanShowMessage(object? parameter)
         {
-            return !IsToggleActive;
+            return !_isPopupActive;
+        }
+        
+        private void UpdateStatus(string status)
+        {
+            Status = status;
         }
     }
 }

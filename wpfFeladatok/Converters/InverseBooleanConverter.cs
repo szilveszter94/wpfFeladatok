@@ -16,7 +16,11 @@ namespace wpfFeladatok.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotSupportedException();
+            if (value is bool boolValue)
+            {
+                return !boolValue;
+            }
+            return value;
         }
     }
 }

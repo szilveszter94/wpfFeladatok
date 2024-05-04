@@ -3,57 +3,122 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:wpfFeladatok"
+        xmlns:mv="clr-namespace:wpfFeladatok.ViewModels"
         xmlns:converter="clr-namespace:wpfFeladatok.Converters"
+        d:DataContext="{d:DesignInstance Type=mv:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
         Background="{StaticResource WindowBackgroundColor}">
     <Window.Resources>
         <converter:NotNullOrEmptyToVisibilityConverter x:Key="NotNullOrEmptyToVisibilityConverter"/>
         <converter:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+        <converter:BooleanConverterToOpenClosedText x:Key="BooleanConverterToOpenClosedText"/>
     </Window.Resources>
-    <Grid Margin="0 10 0 0">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*" />
-            <ColumnDefinition Width="3*" />
-            <ColumnDefinition Width="3*" />
-        </Grid.ColumnDefinitions>
+    <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40" />
-            <RowDefinition Height="50" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBox Background="{StaticResource ControlsBackgroundColor}" Margin="10 0 5 0" VerticalContentAlignment="Center" Text="{Binding TextContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="5" Grid.Row="0" Grid.Column="0" BorderBrush="Gray" BorderThickness="1" />
-        <Border Background="{StaticResource ControlsBackgroundColor}" Margin="5 0 5 0" Grid.Row="0" Grid.Column="1" BorderBrush="Gray" BorderThickness="1">
-            <TextBlock Padding="5" VerticalAlignment="Center" Text="{Binding TextContent}" />
-        </Border>
-        <Label Background="{StaticResource ControlsBackgroundColor}" Margin="5 0 10 0" Grid.Row="0" Grid.Column="2" BorderBrush="Gray" BorderThickness="1">
-            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-                <Image Source="{StaticResource ImageUrl}" Visibility="{Binding TextContent, Converter={StaticResource NotNullOrEmptyToVisibilityConverter}}">
-                    <Image.ToolTip>
-                        <ToolTip>
-                            <TextBlock Text="{Binding TextContent}" />
-                        </ToolTip>
-                    </Image.ToolTip>
-                </Image>
-                <TextBlock Padding="5" VerticalAlignment="Center" Text="{Binding TextContent}" />
-            </StackPanel>
-        </Label>
-        <Button Command="{Binding ShowMessage}" Content="Show Message" Margin="10 10 5 0" Grid.Column="0" Grid.Row="1" />
-        <Button IsEnabled="{Binding IsToggleActive, Converter={StaticResource InverseBooleanConverter}}" Content="Login" Margin="5 10 5 0" Grid.Column="1" Grid.Row="1" />
-        <Grid Margin="5 10 10 0" Grid.Column="2" Grid.Row="1">
+        <Grid Margin="0 10 0 0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="3*" />
             </Grid.ColumnDefinitions>
-            <ToggleButton IsChecked="{Binding IsToggleActive, Mode=TwoWay}" Grid.Column="0" Content="Open popup"/>
-            <Grid Grid.Column="1" VerticalAlignment="Center">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <RadioButton Content="Popup is open" Margin="10 0 0 1" Grid.Row="0" />
-                <RadioButton Content="Popup is closed" Margin="10 1 0 0" Grid.Row="1" />
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <RowDefinition Height="50" />
+            </Grid.RowDefinitions>
+            <TextBox Background="{StaticResource ControlsBackgroundColor}" Margin="10 0 5 0" VerticalContentAlignment="Center" Text="{Binding TextContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="5" Grid.Row="0" Grid.Column="0" BorderBrush="Gray" BorderThickness="1" />
+            <Border Background="{StaticResource ControlsBackgroundColor}" Margin="5 0 5 0" Grid.Row="0" Grid.Column="1" BorderBrush="Gray" BorderThickness="1">
+                <TextBlock Padding="5" VerticalAlignment="Center" Text="{Binding TextContent}" />
+            </Border>
+            <Label Background="{StaticResource ControlsBackgroundColor}" Margin="5 0 10 0" Grid.Row="0" Grid.Column="2" BorderBrush="Gray" BorderThickness="1">
+                <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                    <Image Source="{StaticResource ImageUrl}" Visibility="{Binding TextContent, Converter={StaticResource NotNullOrEmptyToVisibilityConverter}}">
+                        <Image.ToolTip>
+                            <ToolTip>
+                                <TextBlock Text="{Binding TextContent}" />
+                            </ToolTip>
+                        </Image.ToolTip>
+                    </Image>
+                    <TextBlock Padding="5" VerticalAlignment="Center" Text="{Binding TextContent}" />
+                </StackPanel>
+            </Label>
+            <Button IsEnabled="{Binding IsPopupActive, Converter={StaticResource InverseBooleanConverter}}" Command="{Binding ShowMessage}" Content="Show Message" Margin="10 10 5 0" Grid.Column="0" Grid.Row="1" />
+            <Button IsEnabled="{Binding IsPopupActive, Converter={StaticResource InverseBooleanConverter}}" Command="{Binding  ShowLoginWindow}" Content="Login" Margin="5 10 5 0" Grid.Column="1" Grid.Row="1" />
+            <Grid Margin="5 10 10 0" Grid.Column="2" Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <ToggleButton IsChecked="{Binding IsPopupActive, Mode=TwoWay}" Grid.Column="0" Content="{Binding IsPopupActive, Converter={StaticResource BooleanConverterToOpenClosedText}}"/>
+                <Grid Grid.Column="1" VerticalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <RadioButton IsChecked="{Binding IsPopupActive}" Content="Popup is open" GroupName="PopupStatus" Margin="10 0 0 1" Grid.Row="0" />
+                    <RadioButton IsChecked="{Binding IsPopupActive, Converter={StaticResource InverseBooleanConverter}}" Content="Popup is closed" GroupName="PopupStatus" Margin="10 1 0 0" Grid.Row="1" />
+                </Grid>
             </Grid>
         </Grid>
+        <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="1">
+        <Grid  Height="40" HorizontalAlignment="Stretch">
+            <TextBlock Text="{Binding Status}" Padding="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        </Grid>
+        </Border>
+        <Popup Grid.Row="0" IsOpen="{Binding IsPopupActive}" PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=Window}}" Placement="Center">
+            <Grid>
+                <Grid.Resources>
+                    <Style TargetType="Border">
+                        <Style.Triggers>
+                            <EventTrigger RoutedEvent="Border.Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ThicknessAnimation
+                                            Storyboard.TargetProperty="BorderThickness"
+                                            From="0" To="5"
+                                            Duration="0:0:1"
+                                            AutoReverse="True"
+                                            RepeatBehavior="Forever" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Resources>
+                <Border Background="Wheat" Width="200" Height="200" BorderBrush="Gray">
+                    <TextBlock Text="Hello Popup" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock.Triggers>
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(TextBlock.FontSize)">
+                                            <LinearDoubleKeyFrame Value="20" KeyTime="0:0:1"/>
+                                            <LinearDoubleKeyFrame Value="10" KeyTime="0:0:1.5"/>
+                                            <LinearDoubleKeyFrame Value="30" KeyTime="0:0:2.5"/>
+                                            <LinearDoubleKeyFrame Value="20" KeyTime="0:0:3"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(TextBlock.FontSize)">
+                                            <LinearDoubleKeyFrame Value="30" KeyTime="0:0:0.25"/>
+                                            <LinearDoubleKeyFrame Value="10" KeyTime="0:0:0.75"/>
+                                            <LinearDoubleKeyFrame Value="20" KeyTime="0:0:1"/>
+                                            <LinearDoubleKeyFrame Value="10" KeyTime="0:0:1.5"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </TextBlock.Triggers>
+                    </TextBlock>
+                </Border>
+            </Grid>
+        </Popup>
     </Grid>
 </Window>
