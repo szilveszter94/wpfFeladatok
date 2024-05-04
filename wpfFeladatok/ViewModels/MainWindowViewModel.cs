@@ -17,8 +17,7 @@ namespace wpfFeladatok.ViewModels
         public ICommand ShowMessage { get; }
         public ICommand ShowLoginWindow { get; }
         
-        public ICommand SwitchToDarkThemeCommand { get; }
-        public ICommand SwitchToLightThemeCommand { get; }
+        public ICommand SwitchTheme { get; }
         
         
         private string _status = "";
@@ -132,8 +131,7 @@ namespace wpfFeladatok.ViewModels
             ShowMessage = new RelayCommand(ShowMessageAction(), CanShowMessage);
             ShowLoginWindow = new RelayCommand(ShowLoginView(), CanShowMessage);
             Mediator.Mediator.LoginStatusChanged += UpdateStatus;
-            SwitchToDarkThemeCommand = new RelayCommand(SwitchToDarkTheme());
-            SwitchToLightThemeCommand = new RelayCommand(SwitchToLightTheme());
+            SwitchTheme = new RelayCommand(ToggleThemes);
         }
 
         private void Timer_Tick(object? sender, EventArgs e)
@@ -181,37 +179,19 @@ namespace wpfFeladatok.ViewModels
             Status = status;
         }
         
-        public Action<object?> SwitchToDarkTheme()
+        public void ToggleThemes(object obj)
         {
-            return (obj) =>
+            if (obj is bool isLightTheme)
             {
+                var theme = isLightTheme ? "Light" : "Dark";
                 Application.Current.Resources.MergedDictionaries.Clear();
-                Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary()
-                {
-                    Source = new Uri("/Resources/Themes/Dark/ColorResources.xaml", UriKind.RelativeOrAbsolute)
-                });
-                Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary()
-                {
-                    Source = new Uri("/Resources/Themes/ImageResources.xaml", UriKind.RelativeOrAbsolute)
-                });
-            };
-        }
-
-        public Action<object?> SwitchToLightTheme()
-        {
-            return (obj) =>
-            {
-                Application.Current.Resources.MergedDictionaries.Clear();
-                Application.Current.Resources.MergedDictionaries.Add(
-                    new ResourceDictionary() 
-                    { 
-                        Source = new Uri("/Resources/Themes/Light/ColorResources.xaml", UriKind.RelativeOrAbsolute) 
-                    });
-                Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary()
-                {
-                    Source = new Uri("/Resources/Themes/ImageResources.xaml", UriKind.RelativeOrAbsolute)
-                });
-            };
+                Uri uri1 = new Uri($"/Resources/Themes/{theme}/ColorResources.xaml", UriKind.Relative);
+                var resourceDict = Application.LoadComponent(uri1) as ResourceDictionary;
+                Uri uri2 = new Uri("/Resources/Themes/ImageResources.xaml", UriKind.Relative);
+                var resourceDict2 = Application.LoadComponent(uri2) as ResourceDictionary;
+                Application.Current.Resources.MergedDictionaries.Add(resourceDict);
+                Application.Current.Resources.MergedDictionaries.Add(resourceDict2);
+            }
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Color x:Key="WindowBackgroundColor">#8B008B</Color>
-    <SolidColorBrush x:Key="ControlsBackgroundColor" Color="DarkCyan"/>
-    <Color x:Key="WindowBackgroundAnimationColorDark">#BDB76B</Color>
-    <Color x:Key="WindowBackgroundAnimationColorLight">#FAFAD2</Color>
+    <Color x:Key="WindowBackgroundColor">#153448</Color>
+    <SolidColorBrush x:Key="ControlsBackgroundColor" Color="#DFD0B8"/>
+    <Color x:Key="WindowBackgroundAnimationColorDark">#153448</Color>
+    <Color x:Key="WindowBackgroundAnimationColorLight">#3C5B6F</Color>
+    <SolidColorBrush x:Key="TextColorLight" Color="#DFD0B8"/>
+    <SolidColorBrush x:Key="TextColorDark" Color="#153448"/>
 </ResourceDictionary>
