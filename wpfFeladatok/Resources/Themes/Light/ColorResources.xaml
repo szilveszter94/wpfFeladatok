@@ -1,9 +1,14 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Color x:Key="WindowBackgroundColor">#F6F5F2</Color>
-    <SolidColorBrush x:Key="ControlsBackgroundColor" Color="#803D3B"/>
-    <Color x:Key="WindowBackgroundAnimationColorDark">#F6F5F2</Color>
-    <Color x:Key="WindowBackgroundAnimationColorLight">#E4C59E</Color>
-    <SolidColorBrush x:Key="TextColorLight" Color="#322C2B"/>
-    <SolidColorBrush x:Key="TextColorDark" Color="#F0EBE3"/>
+    <Color x:Key="WindowBackgroundColor">#ffffff</Color>
+    <Color x:Key="WindowBackgroundAnimationColorPrimary">#ffffff</Color>
+    <Color x:Key="WindowBackgroundAnimationColorSecondary">#ead7ed</Color>
+    <SolidColorBrush x:Key="ControlsBackgroundColor" Color="#2c2f33"/>
+    <SolidColorBrush x:Key="ButtonHoverColor" Color="#F3EEEA"/>
+    <SolidColorBrush x:Key="ButtonDisabledColor" Color="#C4B6B6"/>
+    <SolidColorBrush x:Key="ButtonCheckedColor" Color="#94F3E4"/>
+    <SolidColorBrush x:Key="ButtonCheckedHoverColor" Color="#37AA9C"/>
+    <SolidColorBrush x:Key="TextColorSecondary" Color="#23272a"/>
+    <SolidColorBrush x:Key="TextColorPrimary" Color="#ffffff"/>
+    <SolidColorBrush x:Key="TextColorError" Color="DarkRed"/>
 </ResourceDictionary>

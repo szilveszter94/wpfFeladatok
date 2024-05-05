@@ -17,7 +17,12 @@ namespace wpfFeladatok
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel();
+            var mainWindow = new MainWindowViewModel();
+            mainWindow.UnselectUserListAction = () =>
+            {
+                UserList.UnselectAll();
+            };
+            DataContext = mainWindow;
         }
     }
 }
