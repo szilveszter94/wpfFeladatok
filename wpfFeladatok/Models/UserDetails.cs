@@ -4,74 +4,39 @@ namespace wpfFeladatok.Models;
 
 public class UserDetails : BaseViewModel
 {
-    private int _id;
-    private int _userId;
+    private readonly int _id;
+    private readonly int _userId;
     private string? _email;
     private string? _phone;
     private string? _address;
 
     public int Id
     {
-        get { return _id; }
-        set
-        {
-            if (_id != value)
-            {
-                _id = value;
-                OnPropertyChanged();
-            }
-        }
+        get => _id;
+        init => SetProperty(ref _id, value);
     }
     
     public int UserId
     {
-        get { return _userId; }
-        set
-        {
-            if (_userId != value)
-            {
-                _userId = value;
-                OnPropertyChanged();
-            }
-        }
+        get => _userId;
+        init => SetProperty(ref _userId, value);
     }
     
-    public string Email
+    public string? Email
     {
-        get { return _email; }
-        set
-        {
-            if (_email != value)
-            {
-                _email = value;
-                OnPropertyChanged();
-            }
-        }
+        get => _email;
+        set => SetProperty(ref _email, value);
     }
     
-    public string Phone
+    public string? Phone
     {
-        get { return _phone; }
-        set
-        {
-            if (_phone != value)
-            {
-                _phone = value;
-                OnPropertyChanged();
-            }
-        }
+        get => _phone;
+        set => SetProperty(ref _phone, value);
     }
     
-    public string Address
+    public string? Address
     {
-        get { return _address; }
-        set
-        {
-            if (_address != value)
-            {
-                _address = value;
-                OnPropertyChanged();
-            }
-        }
+        get => _address;
+        set => SetProperty(ref _address, value);
     }
 }

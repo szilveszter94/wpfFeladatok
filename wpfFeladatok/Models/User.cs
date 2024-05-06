@@ -4,47 +4,26 @@ namespace wpfFeladatok.Models;
 
 public class User : BaseViewModel
 {
-    private int _id;
+    private readonly int _id;
     private string? _firstName;
     private string? _lastName;
 
     public int Id
     {
-        get { return _id; }
-        set
-        {
-            if (_id != value)
-            {
-                _id = value;
-                OnPropertyChanged();
-            }
-        }
+        get => _id;
+        init => SetProperty(ref _id, value);
     }
     
-    public string FirstName
+    public string? FirstName
     {
-        get { return _firstName; }
-        set
-        {
-            if (_firstName != value)
-            {
-                _firstName = value;
-                OnPropertyChanged();
-            }
-        }
+        get => _firstName;
+        set => SetProperty(ref _firstName, value);
     }
     
-    public string LastName
+    public string? LastName
     {
-        get { return _lastName; }
-        set
-        {
-            if (_lastName != value)
-            {
-                _lastName = value;
-                OnPropertyChanged();
-            }
-        }
+        get => _lastName;
+        set => SetProperty(ref _lastName, value);
     }
     
 };

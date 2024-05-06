@@ -6,7 +6,7 @@ namespace wpfFeladatok.Converters
 {
     public class NotNullOrEmptyToVisibilityConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is string str)
             {
@@ -15,7 +15,7 @@ namespace wpfFeladatok.Converters
             return Visibility.Hidden;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

@@ -7,7 +7,7 @@ namespace wpfFeladatok.Service
         private readonly Predicate<object> _canExecute;
         private readonly Action<object> _execute;
 
-        public event EventHandler CanExecuteChanged;
+        public event EventHandler? CanExecuteChanged;
 
         public RelayCommand(Action<object> execute)
             : this(execute, null)
