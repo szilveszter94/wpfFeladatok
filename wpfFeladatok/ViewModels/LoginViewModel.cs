@@ -7,40 +7,31 @@ using Service;
 
 public class LoginViewModel : BaseViewModel
 {
-    private const string TestUserName = "Admin";
-    private const string TestPassword = "Admin123";
-
     public ICommand CheckLogin { get; }
     public Action? CloseAction { get; set; }
     public Action? ClearLoginFieldsAction { get; set; }
-
     public string? ActualUserName { get; set; }
     public string? ActualPassword { get; set; }
-
-    private string _isErrorVisible = "Hidden";
-    private string _status = "";
-    public string Status
+    
+    private const string TestUserName = "Admin";
+    private const string TestPassword = "Admin123";
+    private bool _isErrorVisible;
+    private string _loginLoginStatus = "";
+    
+    public string LoginStatus
     {
-        get { return _status; }
+        get => _loginLoginStatus;
         set
         {
-            _status = value;
-            OnPropertyChanged();
+            SetProperty(ref _loginLoginStatus, value);
             Mediator.NotifyLoginStatusChanged(value);
         }
     }
 
-    public string IsErrorVisible
+    public bool IsErrorVisible
     {
-        get { return _isErrorVisible; }
-        set
-        {
-            if (_isErrorVisible != value)
-            {
-                _isErrorVisible = value;
-                OnPropertyChanged();
-            }
-        }
+        get => _isErrorVisible;
+        set => SetProperty(ref _isErrorVisible, value);
     }
 
     public LoginViewModel()
@@ -52,14 +43,14 @@ public class LoginViewModel : BaseViewModel
     {
         if (ActualUserName == TestUserName && ActualPassword == TestPassword)
         {
-            IsErrorVisible = "Hidden";
+            IsErrorVisible = false;
             CloseAction?.Invoke();
         }
         else
         {
             ClearLoginFieldsAction?.Invoke();
-            Status = "Login failed!";
-            IsErrorVisible = "Visible";
+            LoginStatus = "Login failed!";
+            IsErrorVisible = true;
         }
     }
 }

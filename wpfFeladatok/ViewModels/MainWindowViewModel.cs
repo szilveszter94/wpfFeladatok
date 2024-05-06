@@ -40,7 +40,7 @@ namespace wpfFeladatok.ViewModels
         private string? _phoneNumber;
         private int _redValue;
         private User? _selectedUser;
-        private string _status = "";
+        private string _loginLoginStatus = "";
         private string _textContent = "";
         private readonly DispatcherTimer _timer;
         
@@ -170,10 +170,10 @@ namespace wpfFeladatok.ViewModels
             get => _redValue;
             set => SetProperty(ref _redValue, value);
         }
-        public string Status
+        public string LoginStatus
         {
-            get => _status;
-            private set => SetProperty(ref _status, value);
+            get => _loginLoginStatus;
+            private set => SetProperty(ref _loginLoginStatus, value);
         }
         public string TextContent
         {
@@ -381,7 +381,7 @@ namespace wpfFeladatok.ViewModels
         
         private void UpdateStatus(string status)
         {
-            Status = status;
+            LoginStatus = status;
         }
         
         private void ToggleThemes(object obj)

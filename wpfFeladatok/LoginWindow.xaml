@@ -4,12 +4,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:wpfFeladatok"
+        xmlns:converter="clr-namespace:wpfFeladatok.Converters"
         xmlns:sv="clr-namespace:wpfFeladatok.Service"
         xmlns:mv="clr-namespace:wpfFeladatok.ViewModels"
         d:DataContext="{d:DesignInstance Type=mv:LoginViewModel}"
         mc:Ignorable="d"
         Title="Login" Height="200" Width="380">
     <Window.Resources>
+        <converter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <Style TargetType="Button" x:Key="DefaultButtonStyle">
             <Setter Property="Foreground" Value="{DynamicResource TextColorPrimary}" />
             <Setter Property="Background" Value="{DynamicResource ControlsBackgroundColor}" />
@@ -57,7 +59,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Button Style="{StaticResource DefaultButtonStyle}" Command="{Binding CheckLogin}" Grid.Row="0" Content="Login" Height="35" />
-            <TextBlock Visibility="{Binding IsErrorVisible}" Foreground="Red" HorizontalAlignment="Center" Grid.Row="1" Text="Invalid username or password" />
+            <TextBlock Visibility="{Binding IsErrorVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Foreground="Red" HorizontalAlignment="Center" Grid.Row="1" Text="Invalid username or password" />
         </Grid>
     </Grid>
 </Window>

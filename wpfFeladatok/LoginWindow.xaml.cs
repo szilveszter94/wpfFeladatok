@@ -6,14 +6,14 @@ namespace wpfFeladatok;
 public partial class LoginWindow : Window
 {
     private readonly LoginViewModel _loginViewModel;
-    private bool _closedByUser = false;
+    private bool _isLoginSuccessful;
     public LoginWindow(LoginViewModel loginViewModel)
     {
         InitializeComponent();
         _loginViewModel = loginViewModel;
         loginViewModel.CloseAction = () =>
         {
-            _closedByUser = true;
+            _isLoginSuccessful = true;
             Close();
         };
         loginViewModel.ClearLoginFieldsAction = () =>
@@ -27,13 +27,13 @@ public partial class LoginWindow : Window
     protected override void OnClosed(EventArgs e)
     {
         base.OnClosed(e);
-        if (_closedByUser)
+        if (_isLoginSuccessful)
         {
-            _loginViewModel.Status = "Login successful";
+            _loginViewModel.LoginStatus = "Login successful";
         }
         else
         {
-            _loginViewModel.Status = "Login failed!";
+            _loginViewModel.LoginStatus = "Login failed!";
         }
     }
 }
