@@ -3,264 +3,86 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using wpfFeladatok.Models;
+using wpfFeladatok.Repository;
 using wpfFeladatok.Service;
 
 namespace wpfFeladatok.ViewModels
 {
     public class MainWindowViewModel : BaseViewModel
     {
-        public ObservableCollection<User> Users { get; } = new ()
-        {
-            new User { Id =1, LastName = "Nagy", FirstName = "Kati"},
-            new User{Id =2, LastName = "Kovács", FirstName = "Zoli"},
-            new User{Id =3, LastName = "Kis", FirstName = "Pisti"}
-        };
-
-        public ObservableCollection<UserDetails> UserDetails { get; } = new()
-        {
-            new ()
-                { Address = "Main st. 123", Id = 1, UserId = 1, Phone = "075684954", Email = "email@qewqada.com" },
-            new ()
-                { Address = "Main st. 153", Id = 2, UserId = 2, Phone = "231223134", Email = "email@afqew.com" },
-            new ()
-                { Address = "Main st. 2321", Id = 3, UserId = 3, Phone = "1249123154", Email = "email@qwe13.com" }
-        };
-        public int MaxValue { get; } = 255;
-        public int MinValue { get; } = 0;
-        private string _textContent = "";
-        private bool _isAnimationCheckBoxChecked;
-        private bool _isThemeChangeEnableCheckBoxChecked;
-        private bool _isPopupActive;
-        private bool _isSwitchThemeEnabled;
-
-        private string? _firstName;
-        private string? _lastName;
-        private string? _address;
-        private string? _phoneNumber;
-        private string? _emailAddress;
-        private User? _selectedUser;
-        private bool _isUserInputErrorMessageVisible;
-        private bool _isAddUserEnabled = true;
-        private bool _isSaveUserEnabled;
-        private bool _isUserDetailErrorMessageVisible;
-        
-        private DateTime _currentTime = DateTime.Now;
-        private DispatcherTimer _timer;
-        
-        private int _redValue;
-        private int _greenValue;
-        private int _blueValue;
+        public int MaxValue => 255;
+        public int MinValue => 0;
+        public ObservableCollection<UserDetails> UserDetails { get; }
+        public ObservableCollection<User> Users { get; }
         public ICommand ShowMessageCommand { get; }
         public ICommand ShowLoginWindowCommand { get; }
-        
         public ICommand SwitchThemeCommand { get; }
         public ICommand AddNewUserCommand { get; }
         public ICommand SaveUserCommand { get; }
         public ICommand CancelCommand { get; }
         public Action? UnselectUserListAction { get; set; }
         
-        
+        private string? _address;
+        private int _blueValue;
+        private DateTime _currentTime = DateTime.Now;
+        private string? _emailAddress;
+        private string? _firstName;
+        private int _greenValue;
+        private bool _isAddUserEnabled = true;
+        private bool _isAnimationCheckBoxChecked;
+        private bool _isPopupActive;
+        private bool _isSaveUserEnabled;
+        private bool _isSwitchThemeEnabled;
+        private bool _isThemeChangeEnableCheckBoxChecked;
+        private bool _isUserDetailErrorMessageVisible;
+        private bool _isUserInputErrorMessageVisible;
+        private string? _lastName;
+        private string? _phoneNumber;
+        private int _redValue;
+        private User? _selectedUser;
         private string _status = "";
-
-        public string Status
-        {
-            get { return _status; }
-            set
-            {
-                _status = value;
-                OnPropertyChanged();
-            }
-        }
+        private string _textContent = "";
+        private readonly DispatcherTimer _timer;
         
-        public DateTime CurrentTime
-        {
-            get { return _currentTime; }
-            set
-            {
-                _currentTime = value;
-                OnPropertyChanged();
-            }
-        }
         
-        public string TextContent
-        {
-            get { return _textContent; }
-            set
-            {
-                if (_textContent != value)
-                {
-                    _textContent = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-        
-        public string FirstName
-        {
-            get { return _firstName; }
-            set
-            {
-                if (_firstName != value)
-                {
-                    _firstName = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-        
-        public string LastName
-        {
-            get { return _lastName; }
-            set
-            {
-                if (_lastName != value)
-                {
-                    _lastName = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
         public string? Address
         {
-            get { return _address; }
-            set
-            {
-                if (_address != value)
-                {
-                    _address = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _address;
+            set => SetProperty(ref _address, value);
         }
-
-        public string? PhoneNumber
+        public int BlueValue
         {
-            get { return _phoneNumber; }
-            set
-            {
-                if (_phoneNumber != value)
-                {
-                    _phoneNumber = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _blueValue;
+            set => SetProperty(ref _blueValue, value);
         }
-
+        public DateTime CurrentTime
+        {
+            get => _currentTime;
+            private set => SetProperty(ref _currentTime, value);
+        }
         public string? EmailAddress
         {
-            get { return _emailAddress; }
-            set
-            {
-                if (_emailAddress != value)
-                {
-                    _emailAddress = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _emailAddress;
+            set => SetProperty(ref _emailAddress, value);
         }
-
-        public User? SelectedUser
+        public string? FirstName
         {
-            get { return _selectedUser;}
-            set
-            {
-                if (_selectedUser != value)
-                {
-                    HandleSelect(value);
-                    OnPropertyChanged();
-                }
-            }
+            get => _firstName;
+            set => SetProperty(ref _firstName, value);
         }
-
+        public int GreenValue
+        {
+            get => _greenValue;
+            set => SetProperty(ref _greenValue, value);
+        }
         public bool IsAddUserEnabled
         {
-            get { return _isAddUserEnabled; }
-            set
-            {
-                if (_isAddUserEnabled != value)
-                {
-                    _isAddUserEnabled = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _isAddUserEnabled;
+            set => SetProperty(ref _isAddUserEnabled, value);
         }
-        
-        public bool IsSaveUserEnabled
-        {
-            get { return _isSaveUserEnabled; }
-            set
-            {
-                if (_isSaveUserEnabled != value)
-                {
-                    _isSaveUserEnabled = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-        
-        public bool IsUserInputErrorMessageVisible
-        {
-            get { return _isUserInputErrorMessageVisible; }
-            set
-            {
-                if (_isUserInputErrorMessageVisible != value)
-                {
-                    _isUserInputErrorMessageVisible = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-        
-        public bool IsUserDetailsErrorMessageVisible
-        {
-            get { return _isUserDetailErrorMessageVisible; }
-            set
-            {
-                if (_isUserDetailErrorMessageVisible != value)
-                {
-                    _isUserDetailErrorMessageVisible = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public bool IsSwitchThemeEnabled
-        {
-            get { return _isSwitchThemeEnabled; }
-            set {
-                if (_isSwitchThemeEnabled != value)
-                {
-                    _isSwitchThemeEnabled = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public bool IsThemeChangeEnableCheckBoxChecked
-        {
-            get { return _isThemeChangeEnableCheckBoxChecked; }
-            set
-            {
-                if (_isThemeChangeEnableCheckBoxChecked != value)
-                {
-                    if (!value || _isAnimationCheckBoxChecked)
-                    {
-                        IsSwitchThemeEnabled = false;
-                    }
-                    else
-                    {
-                        IsSwitchThemeEnabled = true;
-                    }
-                    _isThemeChangeEnableCheckBoxChecked = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
         public bool IsAnimationCheckBoxChecked
         {
-            get { return _isAnimationCheckBoxChecked; }
+            get => _isAnimationCheckBoxChecked;
             set
             {
                 if (_isAnimationCheckBoxChecked != value)
@@ -273,68 +95,98 @@ namespace wpfFeladatok.ViewModels
                     {
                         IsSwitchThemeEnabled = true;
                     }
-                    _isAnimationCheckBoxChecked = value;
-                    OnPropertyChanged();
+                    SetProperty(ref _isAnimationCheckBoxChecked, value);
                 }
             }
         }
-
         public bool IsPopupActive
         {
-            get { return _isPopupActive; }
+            get => _isPopupActive;
+            set => SetProperty(ref _isPopupActive, value);
+        }
+        public bool IsSaveUserEnabled
+        {
+            get => _isSaveUserEnabled;
+            set => SetProperty(ref _isSaveUserEnabled, value);
+        }
+        public bool IsSwitchThemeEnabled
+        {
+            get => _isSwitchThemeEnabled;
+            set => SetProperty(ref _isSwitchThemeEnabled, value);
+        }
+        public bool IsThemeChangeEnableCheckBoxChecked
+        {
+            get => _isThemeChangeEnableCheckBoxChecked;
             set
             {
-                if (_isPopupActive != value)
+                if (_isThemeChangeEnableCheckBoxChecked != value)
                 {
-                    _isPopupActive = value;
-                    OnPropertyChanged();
+                    if (!value || _isAnimationCheckBoxChecked)
+                    {
+                        IsSwitchThemeEnabled = false;
+                    }
+                    else
+                    {
+                        IsSwitchThemeEnabled = true;
+                    }
+                    SetProperty(ref _isThemeChangeEnableCheckBoxChecked, value);
                 }
             }
         }
-        
+        public bool IsUserDetailsErrorMessageVisible
+        {
+            get => _isUserDetailErrorMessageVisible;
+            set => SetProperty(ref _isUserDetailErrorMessageVisible, value);
+        }
+        public bool IsUserInputErrorMessageVisible
+        {
+            get => _isUserInputErrorMessageVisible;
+            set => SetProperty(ref _isUserInputErrorMessageVisible, value);
+        }
+        public string? LastName
+        {
+            get => _lastName;
+            set => SetProperty(ref _lastName, value);
+        }
+        public string? PhoneNumber
+        {
+            get => _phoneNumber;
+            set => SetProperty(ref _phoneNumber, value);
+        }
+        public User? SelectedUser
+        {
+            get => _selectedUser;
+            set
+            {
+                if (_selectedUser != value)
+                {
+                    HandleSelect(value);
+                    SetProperty(ref _selectedUser, value);
+                }
+            }
+        }
         public int RedValue
         {
-            get { return _redValue; }
-            set
-            {
-                if (_redValue != value)
-                {
-                    _redValue = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _redValue;
+            set => SetProperty(ref _redValue, value);
         }
-        
-        public int GreenValue
+        public string Status
         {
-            get { return _greenValue; }
-            set
-            {
-                if (_greenValue != value)
-                {
-                    _greenValue = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _status;
+            private set => SetProperty(ref _status, value);
         }
-        
-        public int BlueValue
+        public string TextContent
         {
-            get { return _blueValue; }
-            set
-            {
-                if (_blueValue != value)
-                {
-                    _blueValue = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _textContent;
+            set => SetProperty(ref _textContent, value);
         }
         
         public MainWindowViewModel()
         {
-            _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromSeconds(1);
+            _timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
             _timer.Tick += Timer_Tick;
             _timer.Start();
             ShowMessageCommand = new RelayCommand(ShowMessageAction(), CanShowMessage);
@@ -343,7 +195,11 @@ namespace wpfFeladatok.ViewModels
             SwitchThemeCommand = new RelayCommand(ToggleThemes);
             AddNewUserCommand = new RelayCommand(AddNewUser);
             SaveUserCommand = new RelayCommand(SaveUser);
-            CancelCommand = new RelayCommand(ClearUserEditor);
+            CancelCommand = new RelayCommand(ResetDefaultElementStates);
+            IUsersRepository usersRepository = new UsersRepository();
+            IUserDetailsRepository userDetailsRepository = new UserDetailsRepository();
+            Users = usersRepository.UserList;
+            UserDetails = userDetailsRepository.UserDetailsList;
         }
 
         private void Timer_Tick(object? sender, EventArgs e)
@@ -353,30 +209,20 @@ namespace wpfFeladatok.ViewModels
         
         private Action<object?> ShowMessageAction()
         {
-            return (obj) => MessageBox.Show("Operation has completed successfully");
+            return _ => MessageBox.Show("Operation has completed successfully");
         }
         
         private Action<object?> ShowLoginView()
         {
-            return (obj) =>
+            return _ =>
             {
                 try
                 {
-                    var loginViewModel = new LoginViewModel();
-                    var loginWindow = new LoginWindow(loginViewModel);
-
-                    var mainWindow = Application.Current.MainWindow;
-                    if (mainWindow != null)
-                    {
-                        loginWindow.Owner = mainWindow;
-                        loginWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                    }
-
-                    loginWindow.ShowDialog();
+                    ShowLoginDialog();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    HandleError(ex);
                 }
             };
         }
@@ -395,75 +241,48 @@ namespace wpfFeladatok.ViewModels
         {
             if (obj is bool isLightTheme)
             {
-                var theme = isLightTheme ? "Light" : "Dark";
-                Application.Current.Resources.MergedDictionaries.Clear();
-                Uri uri1 = new Uri($"/Resources/Themes/{theme}/ColorResources.xaml", UriKind.Relative);
-                var resourceDict = Application.LoadComponent(uri1) as ResourceDictionary;
-                Uri uri2 = new Uri("/Resources/Themes/ImageResources.xaml", UriKind.Relative);
-                var resourceDict2 = Application.LoadComponent(uri2) as ResourceDictionary;
-                Application.Current.Resources.MergedDictionaries.Add(resourceDict);
-                Application.Current.Resources.MergedDictionaries.Add(resourceDict2);
+                SetTheme(isLightTheme);
             }
         }
         
         private void AddNewUser(object obj)
         {
-            if (string.IsNullOrEmpty(_firstName) || string.IsNullOrEmpty(_lastName))
+            if (!ValidateInput())
             {
                 IsUserInputErrorMessageVisible = true;
+                return;
             }
-            else
-            {
-                int newUserId = Users.Last().Id + 1;
-                Users.Add(new User{Id = newUserId, FirstName = FirstName, LastName = LastName});
-                FirstName = "";
-                LastName = "";
-            }
+
+            int newUserId = GetNextUserId();
+            CreateUser(newUserId);
+            ResetDefaultElementStates();
         }
         
         private void SaveUser(object obj)
         {
-            if (string.IsNullOrEmpty(_firstName) || string.IsNullOrEmpty(_lastName))
+            if (!ValidateInput())
             {
                 IsUserInputErrorMessageVisible = true;
+                return;
             }
-            else
-            {
-                var existingUser = Users.FirstOrDefault(u => u.Id == _selectedUser?.Id);
-                if (existingUser != null)
-                {
-                    existingUser.FirstName = FirstName;
-                    existingUser.LastName = LastName;
-                    ModifyUserDetails(existingUser);
-                    UnselectUserListAction?.Invoke();
-                    SelectedUser = new User();
-                    ResetUserProperties();
-                    IsAddUserEnabled = true;
-                    IsSaveUserEnabled = false;
-                    IsUserDetailsErrorMessageVisible = false;
-                }
-            }
-        }
 
-        private void ClearUserEditor(object obj)
-        {
-            UnselectUserListAction?.Invoke();
-            SelectedUser = new User();
-            ResetUserProperties();
-            IsUserDetailsErrorMessageVisible = false;
-            IsUserInputErrorMessageVisible = false;
-            IsAddUserEnabled = true;
-            IsSaveUserEnabled = false;
+            var existingUser = Users.FirstOrDefault(u => u.Id == _selectedUser?.Id);
+            if (existingUser != null)
+            {
+                ModifyExistingUser(existingUser);
+                UpdateUserDetails(existingUser);
+                ResetDefaultElementStates();
+            }
         }
         
-        private void HandleSelect(User user)
+        private void HandleSelect(User? user)
         {
             IsAddUserEnabled = false;
             IsSaveUserEnabled = true;
-            FirstName = user.FirstName;
-            LastName = user.LastName;
+            FirstName = user?.FirstName;
+            LastName = user?.LastName;
             _selectedUser = user;
-            var selectedDetails = UserDetails.FirstOrDefault(d => d.UserId == user.Id);
+            var selectedDetails = UserDetails.FirstOrDefault(d => d.UserId == user?.Id);
             if (selectedDetails == null || (string.IsNullOrEmpty(selectedDetails.Address) && (string.IsNullOrEmpty(selectedDetails.Email) && (string.IsNullOrEmpty(selectedDetails.Phone)))))
             {
                 EmailAddress = "";
@@ -479,35 +298,126 @@ namespace wpfFeladatok.ViewModels
                 Address = selectedDetails.Address;
             }
         }
+        
+        private void ShowLoginDialog(){
+            var loginViewModel = new LoginViewModel();
+            var loginWindow = new LoginWindow(loginViewModel);
 
-        private void ModifyUserDetails(User existingUser)
+            var mainWindow = Application.Current.MainWindow;
+            if (mainWindow != null)
+            {
+                loginWindow.Owner = mainWindow;
+                loginWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            }
+
+            loginWindow.ShowDialog();
+        }
+
+        private void ModifyExistingUser(User existingUser)
         {
-            var userDetails = UserDetails.FirstOrDefault(d => d.UserId == existingUser.Id);
+            existingUser.FirstName = FirstName ?? "";
+            existingUser.LastName = LastName ?? "";
+        }
+        
+        private void UpdateUserDetails(User existingUser)
+        {
+            var userDetails = GetUserDetails(existingUser);
             if (userDetails == null)
             {
-                var newDetailId = UserDetails.Last().Id + 1;
-                var details = new UserDetails()
-                {
-                    Id = newDetailId, UserId = existingUser.Id, Address = Address, Email = EmailAddress,
-                    Phone = PhoneNumber
-                };
-                UserDetails.Add(details);
+                CreateUserDetails(existingUser.Id);
             }
             else
             {
-                userDetails.Address = Address;
-                userDetails.Email = EmailAddress;
-                userDetails.Phone = PhoneNumber;
+                userDetails.Address = Address ?? "";
+                userDetails.Email = EmailAddress ?? "";
+                userDetails.Phone = PhoneNumber ?? "";
             }
         }
+        
+        private UserDetails? GetUserDetails(User user)
+        {
+            return UserDetails.FirstOrDefault(d => d.UserId == user.Id);
+        }
+        
+        private void ResetDefaultElementStates(object? obj = null)
+        {
+            UnselectSelectedUser();
+            ResetInputFields();
+            SetDefaultValuesForButtonsAndErrorMessages();
+        }
+        
+        private void CreateUserDetails(int userId)
+        {
+            var newDetailId = UserDetails.Any() ? UserDetails.Last().Id + 1 : 1;
+            var details = new UserDetails
+            {
+                Id = newDetailId,
+                UserId = userId,
+                Address = Address ?? "",
+                Email = EmailAddress ?? "",
+                Phone = PhoneNumber ?? ""
+            };
+            UserDetails.Add(details);
+        }
+        
+        private bool ValidateInput()
+        {
+            return !string.IsNullOrEmpty(_firstName) && !string.IsNullOrEmpty(_lastName);
+        }
+        
+        private int GetNextUserId()
+        {
+            return Users.Any() ? Users.Last().Id + 1 : 1;
+        }
+        
+        private void CreateUser(int newUserId)
+        {
+            var newUser = new User { Id = newUserId, FirstName = _firstName ?? "", LastName = _lastName ?? "" };
+            Users.Add(newUser);
+            UpdateUserDetails(newUser);
+        }
 
-        private void ResetUserProperties()
+        private void HandleError(Exception ex)
+        {
+            MessageBox.Show($"Error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        private void ResetInputFields()
         {
             FirstName = "";
             LastName = "";
             EmailAddress = "";
             PhoneNumber = "";
             Address = "";
+        }
+
+        private void SetTheme(bool isLightTheme)
+        {
+            var theme = isLightTheme ? "Light" : "Dark";
+            Application.Current.Resources.MergedDictionaries.Clear();
+            LoadResourceDictionary($"/Resources/Themes/{theme}/ColorResources.xaml");
+            LoadResourceDictionary("/Resources/Themes/ImageResources.xaml");
+        }
+        
+        private void LoadResourceDictionary(string resourcePath)
+        {
+            var uri = new Uri(resourcePath, UriKind.Relative);
+            var resourceDict = Application.LoadComponent(uri) as ResourceDictionary;
+            Application.Current.Resources.MergedDictionaries.Add(resourceDict);
+        }
+
+        private void UnselectSelectedUser()
+        {
+            UnselectUserListAction?.Invoke();
+            SelectedUser = new User();
+        }
+        
+        private void SetDefaultValuesForButtonsAndErrorMessages()
+        {
+            IsUserDetailsErrorMessageVisible = false;
+            IsUserInputErrorMessageVisible = false;
+            IsAddUserEnabled = true;
+            IsSaveUserEnabled = false;
         }
     }
 }
