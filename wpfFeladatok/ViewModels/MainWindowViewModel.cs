@@ -183,66 +183,23 @@ namespace wpfFeladatok.ViewModels
         
         public MainWindowViewModel()
         {
+            AddNewUserCommand = new RelayCommand(AddNewUser);
+            CancelCommand = new RelayCommand(ResetDefaultElementStates);
+            Mediator.Mediator.LoginStatusChanged += UpdateStatus;
+            SaveUserCommand = new RelayCommand(SaveUser);
+            ShowLoginWindowCommand = new RelayCommand(ShowLoginView(), CanShowMessage);
+            ShowMessageCommand = new RelayCommand(ShowMessageAction(), CanShowMessage);
+            SwitchThemeCommand = new RelayCommand(ToggleThemes);
+            IUsersRepository usersRepository = new UsersRepository();
+            IUserDetailsRepository userDetailsRepository = new UserDetailsRepository();
+            Users = usersRepository.UserList;
+            UserDetails = userDetailsRepository.UserDetailsList;
             _timer = new DispatcherTimer
             {
                 Interval = TimeSpan.FromSeconds(1)
             };
             _timer.Tick += Timer_Tick;
             _timer.Start();
-            ShowMessageCommand = new RelayCommand(ShowMessageAction(), CanShowMessage);
-            ShowLoginWindowCommand = new RelayCommand(ShowLoginView(), CanShowMessage);
-            Mediator.Mediator.LoginStatusChanged += UpdateStatus;
-            SwitchThemeCommand = new RelayCommand(ToggleThemes);
-            AddNewUserCommand = new RelayCommand(AddNewUser);
-            SaveUserCommand = new RelayCommand(SaveUser);
-            CancelCommand = new RelayCommand(ResetDefaultElementStates);
-            IUsersRepository usersRepository = new UsersRepository();
-            IUserDetailsRepository userDetailsRepository = new UserDetailsRepository();
-            Users = usersRepository.UserList;
-            UserDetails = userDetailsRepository.UserDetailsList;
-        }
-
-        private void Timer_Tick(object? sender, EventArgs e)
-        {
-            CurrentTime = DateTime.Now;
-        }
-        
-        private Action<object?> ShowMessageAction()
-        {
-            return _ => MessageBox.Show("Operation has completed successfully");
-        }
-        
-        private Action<object?> ShowLoginView()
-        {
-            return _ =>
-            {
-                try
-                {
-                    ShowLoginDialog();
-                }
-                catch (Exception ex)
-                {
-                    HandleError(ex);
-                }
-            };
-        }
-
-        private bool CanShowMessage(object? parameter)
-        {
-            return !_isPopupActive;
-        }
-        
-        private void UpdateStatus(string status)
-        {
-            Status = status;
-        }
-        
-        private void ToggleThemes(object obj)
-        {
-            if (obj is bool isLightTheme)
-            {
-                SetTheme(isLightTheme);
-            }
         }
         
         private void AddNewUser(object obj)
@@ -256,6 +213,27 @@ namespace wpfFeladatok.ViewModels
             int newUserId = GetNextUserId();
             CreateUser(newUserId);
             ResetDefaultElementStates();
+        }
+        
+        private void CreateUser(int newUserId)
+        {
+            var newUser = new User { Id = newUserId, FirstName = _firstName ?? "", LastName = _lastName ?? "" };
+            Users.Add(newUser);
+            UpdateUserDetails(newUser);
+        }
+        
+        private void CreateUserDetails(int userId)
+        {
+            var newDetailId = UserDetails.Any() ? UserDetails.Last().Id + 1 : 1;
+            var details = new UserDetails
+            {
+                Id = newDetailId,
+                UserId = userId,
+                Address = Address ?? "",
+                Email = EmailAddress ?? "",
+                Phone = PhoneNumber ?? ""
+            };
+            UserDetails.Add(details);
         }
         
         private void SaveUser(object obj)
@@ -273,6 +251,26 @@ namespace wpfFeladatok.ViewModels
                 UpdateUserDetails(existingUser);
                 ResetDefaultElementStates();
             }
+        }
+        
+        private void UpdateUserDetails(User existingUser)
+        {
+            var userDetails = GetUserDetails(existingUser);
+            if (userDetails == null)
+            {
+                CreateUserDetails(existingUser.Id);
+            }
+            else
+            {
+                userDetails.Address = Address ?? "";
+                userDetails.Email = EmailAddress ?? "";
+                userDetails.Phone = PhoneNumber ?? "";
+            }
+        }
+        
+        private UserDetails? GetUserDetails(User user)
+        {
+            return UserDetails.FirstOrDefault(d => d.UserId == user.Id);
         }
         
         private void HandleSelect(User? user)
@@ -299,6 +297,59 @@ namespace wpfFeladatok.ViewModels
             }
         }
         
+        private int GetNextUserId()
+        {
+            return Users.Any() ? Users.Last().Id + 1 : 1;
+        }
+        
+        private void ResetInputFields()
+        {
+            FirstName = "";
+            LastName = "";
+            EmailAddress = "";
+            PhoneNumber = "";
+            Address = "";
+        }
+        
+        private void UnselectSelectedUser()
+        {
+            UnselectUserListAction?.Invoke();
+            SelectedUser = new User();
+        }
+        
+        private void ModifyExistingUser(User existingUser)
+        {
+            existingUser.FirstName = FirstName ?? "";
+            existingUser.LastName = LastName ?? "";
+        }
+        
+        private void ResetDefaultElementStates(object? obj = null)
+        {
+            UnselectSelectedUser();
+            ResetInputFields();
+            SetDefaultValuesForButtonsAndErrorMessages();
+        }
+        
+        private bool ValidateInput()
+        {
+            return !string.IsNullOrEmpty(_firstName) && !string.IsNullOrEmpty(_lastName);
+        }
+        
+        private Action<object?> ShowLoginView()
+        {
+            return _ =>
+            {
+                try
+                {
+                    ShowLoginDialog();
+                }
+                catch (Exception ex)
+                {
+                    HandleError(ex);
+                }
+            };
+        }
+        
         private void ShowLoginDialog(){
             var loginViewModel = new LoginViewModel();
             var loginWindow = new LoginWindow(loginViewModel);
@@ -312,83 +363,46 @@ namespace wpfFeladatok.ViewModels
 
             loginWindow.ShowDialog();
         }
-
-        private void ModifyExistingUser(User existingUser)
+        
+        private Action<object?> ShowMessageAction()
         {
-            existingUser.FirstName = FirstName ?? "";
-            existingUser.LastName = LastName ?? "";
+            return _ => MessageBox.Show("Operation has completed successfully");
         }
         
-        private void UpdateUserDetails(User existingUser)
+        private void Timer_Tick(object? sender, EventArgs e)
         {
-            var userDetails = GetUserDetails(existingUser);
-            if (userDetails == null)
+            CurrentTime = DateTime.Now;
+        }
+        
+        private bool CanShowMessage(object? parameter)
+        {
+            return !_isPopupActive;
+        }
+        
+        private void UpdateStatus(string status)
+        {
+            Status = status;
+        }
+        
+        private void ToggleThemes(object obj)
+        {
+            if (obj is bool isLightTheme)
             {
-                CreateUserDetails(existingUser.Id);
+                SetTheme(isLightTheme);
             }
-            else
-            {
-                userDetails.Address = Address ?? "";
-                userDetails.Email = EmailAddress ?? "";
-                userDetails.Phone = PhoneNumber ?? "";
-            }
         }
         
-        private UserDetails? GetUserDetails(User user)
-        {
-            return UserDetails.FirstOrDefault(d => d.UserId == user.Id);
-        }
-        
-        private void ResetDefaultElementStates(object? obj = null)
-        {
-            UnselectSelectedUser();
-            ResetInputFields();
-            SetDefaultValuesForButtonsAndErrorMessages();
-        }
-        
-        private void CreateUserDetails(int userId)
-        {
-            var newDetailId = UserDetails.Any() ? UserDetails.Last().Id + 1 : 1;
-            var details = new UserDetails
-            {
-                Id = newDetailId,
-                UserId = userId,
-                Address = Address ?? "",
-                Email = EmailAddress ?? "",
-                Phone = PhoneNumber ?? ""
-            };
-            UserDetails.Add(details);
-        }
-        
-        private bool ValidateInput()
-        {
-            return !string.IsNullOrEmpty(_firstName) && !string.IsNullOrEmpty(_lastName);
-        }
-        
-        private int GetNextUserId()
-        {
-            return Users.Any() ? Users.Last().Id + 1 : 1;
-        }
-        
-        private void CreateUser(int newUserId)
-        {
-            var newUser = new User { Id = newUserId, FirstName = _firstName ?? "", LastName = _lastName ?? "" };
-            Users.Add(newUser);
-            UpdateUserDetails(newUser);
-        }
-
         private void HandleError(Exception ex)
         {
             MessageBox.Show($"Error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
-
-        private void ResetInputFields()
+        
+        private void SetDefaultValuesForButtonsAndErrorMessages()
         {
-            FirstName = "";
-            LastName = "";
-            EmailAddress = "";
-            PhoneNumber = "";
-            Address = "";
+            IsUserDetailsErrorMessageVisible = false;
+            IsUserInputErrorMessageVisible = false;
+            IsAddUserEnabled = true;
+            IsSaveUserEnabled = false;
         }
 
         private void SetTheme(bool isLightTheme)
@@ -404,20 +418,6 @@ namespace wpfFeladatok.ViewModels
             var uri = new Uri(resourcePath, UriKind.Relative);
             var resourceDict = Application.LoadComponent(uri) as ResourceDictionary;
             Application.Current.Resources.MergedDictionaries.Add(resourceDict);
-        }
-
-        private void UnselectSelectedUser()
-        {
-            UnselectUserListAction?.Invoke();
-            SelectedUser = new User();
-        }
-        
-        private void SetDefaultValuesForButtonsAndErrorMessages()
-        {
-            IsUserDetailsErrorMessageVisible = false;
-            IsUserInputErrorMessageVisible = false;
-            IsAddUserEnabled = true;
-            IsSaveUserEnabled = false;
         }
     }
 }
