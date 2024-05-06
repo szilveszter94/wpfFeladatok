@@ -451,6 +451,7 @@ namespace wpfFeladatok.ViewModels
             SelectedUser = new User();
             ResetUserProperties();
             IsUserDetailsErrorMessageVisible = false;
+            IsUserInputErrorMessageVisible = false;
             IsAddUserEnabled = true;
             IsSaveUserEnabled = false;
         }

@@ -4,7 +4,8 @@
     <Color x:Key="WindowBackgroundAnimationColorPrimary">#232b2b</Color>
     <Color x:Key="WindowBackgroundAnimationColorSecondary">#353839</Color>
     <SolidColorBrush x:Key="ControlsBackgroundColor" Color="#F3EEEA"/>
-    <SolidColorBrush x:Key="ButtonHoverColor" Color="#3b444b"/>
+    <SolidColorBrush x:Key="ButtonBackgroundColor" Color="#64CCC5"/>
+    <SolidColorBrush x:Key="ButtonHoverColor" Color="#153448"/>
     <SolidColorBrush x:Key="ButtonDisabledColor" Color="#999999"/>
     <SolidColorBrush x:Key="ButtonCheckedColor" Color="#03506F"/>
     <SolidColorBrush x:Key="ButtonCheckedHoverColor" Color="#30475E"/>
