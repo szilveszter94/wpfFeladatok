@@ -1,10 +1,5 @@
-﻿using System.ComponentModel;
-using System.Globalization;
-using System.Runtime.CompilerServices;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
+﻿using System.Windows;
+
 using wpfFeladatok.ViewModels;
 
 namespace wpfFeladatok

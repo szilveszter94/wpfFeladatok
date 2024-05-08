@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using wpfFeladatok.Models;
+using wpfFeladatok.Models.Enums;
 using wpfFeladatok.Repository;
 using wpfFeladatok.Service;
 
@@ -16,70 +17,65 @@ namespace wpfFeladatok.ViewModels
         public ObservableCollection<User> Users { get; }
         public ICommand ShowMessageCommand { get; }
         public ICommand ShowLoginWindowCommand { get; }
-        public ICommand SwitchThemeCommand { get; }
         public ICommand AddNewUserCommand { get; }
         public ICommand SaveUserCommand { get; }
+        
+        public ICommand DeleteUserCommand { get; }
         public ICommand CancelCommand { get; }
         public Action? UnselectUserListAction { get; set; }
+        public ObservableCollection<ThemeEnum> ThemeOptions { get; private set; } = new ((ThemeEnum[])Enum.GetValues(typeof(ThemeEnum)));
         
-        private string? _address;
-        private int _blueValue;
-        private DateTime _currentTime = DateTime.Now;
-        private string? _emailAddress;
-        private string? _firstName;
-        private int _greenValue;
-        private bool _isAddUserEnabled = true;
-        private bool _isAnimationCheckBoxChecked;
-        private bool _isPopupActive;
-        private bool _isSaveUserEnabled;
-        private bool _isSwitchThemeEnabled;
-        private bool _isThemeChangeEnableCheckBoxChecked;
-        private bool _isUserDetailErrorMessageVisible;
-        private bool _isUserInputErrorMessageVisible;
-        private string? _lastName;
-        private string? _phoneNumber;
-        private int _redValue;
-        private User? _selectedUser;
-        private string _loginLoginStatus = "";
-        private string _textContent = "";
         private readonly DispatcherTimer _timer;
-        
         
         public string? Address
         {
             get => _address;
             set => SetProperty(ref _address, value);
         }
+        private string? _address;
+        
         public int BlueValue
         {
             get => _blueValue;
             set => SetProperty(ref _blueValue, value);
         }
+        private int _blueValue;
+        
         public DateTime CurrentTime
         {
             get => _currentTime;
             private set => SetProperty(ref _currentTime, value);
         }
+        private DateTime _currentTime = DateTime.Now;
+        
         public string? EmailAddress
         {
             get => _emailAddress;
             set => SetProperty(ref _emailAddress, value);
         }
+        private string? _emailAddress;
+        
         public string? FirstName
         {
             get => _firstName;
             set => SetProperty(ref _firstName, value);
         }
+        private string? _firstName;
+        
         public int GreenValue
         {
             get => _greenValue;
             set => SetProperty(ref _greenValue, value);
         }
+        private int _greenValue;
+        
         public bool IsAddUserEnabled
         {
             get => _isAddUserEnabled;
             set => SetProperty(ref _isAddUserEnabled, value);
         }
+        private bool _isAddUserEnabled = true;
+        
         public bool IsAnimationCheckBoxChecked
         {
             get => _isAnimationCheckBoxChecked;
@@ -99,21 +95,29 @@ namespace wpfFeladatok.ViewModels
                 }
             }
         }
+        private bool _isAnimationCheckBoxChecked;
+        
         public bool IsPopupActive
         {
             get => _isPopupActive;
             set => SetProperty(ref _isPopupActive, value);
         }
-        public bool IsSaveUserEnabled
+        private bool _isPopupActive;
+        
+        public bool IsSaveAndDeleteUserEnabled
         {
-            get => _isSaveUserEnabled;
-            set => SetProperty(ref _isSaveUserEnabled, value);
+            get => _isSaveAndDeleteAndDeleteUserEnabled;
+            set => SetProperty(ref _isSaveAndDeleteAndDeleteUserEnabled, value);
         }
+        private bool _isSaveAndDeleteAndDeleteUserEnabled;
+        
         public bool IsSwitchThemeEnabled
         {
             get => _isSwitchThemeEnabled;
             set => SetProperty(ref _isSwitchThemeEnabled, value);
         }
+        private bool _isSwitchThemeEnabled;
+        
         public bool IsThemeChangeEnableCheckBoxChecked
         {
             get => _isThemeChangeEnableCheckBoxChecked;
@@ -133,26 +137,57 @@ namespace wpfFeladatok.ViewModels
                 }
             }
         }
+        private bool _isThemeChangeEnableCheckBoxChecked;
+        
         public bool IsUserDetailsErrorMessageVisible
         {
             get => _isUserDetailErrorMessageVisible;
             set => SetProperty(ref _isUserDetailErrorMessageVisible, value);
         }
+        private bool _isUserDetailErrorMessageVisible;
+        
         public bool IsUserInputErrorMessageVisible
         {
             get => _isUserInputErrorMessageVisible;
             set => SetProperty(ref _isUserInputErrorMessageVisible, value);
         }
+        private bool _isUserInputErrorMessageVisible;
+        
         public string? LastName
         {
             get => _lastName;
             set => SetProperty(ref _lastName, value);
         }
+        private string? _lastName;
+        
+        public string LoginStatus
+        {
+            get => _loginLoginStatus;
+            private set => SetProperty(ref _loginLoginStatus, value);
+        }
+        private string _loginLoginStatus = "";
+        
         public string? PhoneNumber
         {
             get => _phoneNumber;
             set => SetProperty(ref _phoneNumber, value);
         }
+        private string? _phoneNumber;
+        
+        public ThemeEnum SelectedTheme
+        {
+            get => _selectedTheme;
+            set
+            {
+                if (value != _selectedTheme)
+                {
+                    HandleThemeChange(value);
+                    SetProperty(ref _selectedTheme, value);
+                }
+            }
+        }
+        private ThemeEnum _selectedTheme;
+
         public User? SelectedUser
         {
             get => _selectedUser;
@@ -165,21 +200,21 @@ namespace wpfFeladatok.ViewModels
                 }
             }
         }
+        private User? _selectedUser;
+        
         public int RedValue
         {
             get => _redValue;
             set => SetProperty(ref _redValue, value);
         }
-        public string LoginStatus
-        {
-            get => _loginLoginStatus;
-            private set => SetProperty(ref _loginLoginStatus, value);
-        }
+        private int _redValue;
+        
         public string TextContent
         {
             get => _textContent;
             set => SetProperty(ref _textContent, value);
         }
+        private string _textContent = "";
         
         public MainWindowViewModel()
         {
@@ -187,9 +222,10 @@ namespace wpfFeladatok.ViewModels
             CancelCommand = new RelayCommand(ResetDefaultElementStates);
             Mediator.Mediator.LoginStatusChanged += UpdateStatus;
             SaveUserCommand = new RelayCommand(SaveUser);
+            DeleteUserCommand = new RelayCommand(DeleteUser);
+            SelectedTheme = ThemeOptions.Count > 0 ? ThemeOptions[0] : ThemeEnum.Dark;
             ShowLoginWindowCommand = new RelayCommand(ShowLoginView(), CanShowMessage);
             ShowMessageCommand = new RelayCommand(ShowMessageAction(), CanShowMessage);
-            SwitchThemeCommand = new RelayCommand(ToggleThemes);
             IUsersRepository usersRepository = new UsersRepository();
             IUserDetailsRepository userDetailsRepository = new UserDetailsRepository();
             Users = usersRepository.UserList;
@@ -253,6 +289,23 @@ namespace wpfFeladatok.ViewModels
             }
         }
         
+        private void DeleteUser(object obj)
+        {
+            if (!ValidateInput())
+            {
+                IsUserInputErrorMessageVisible = true;
+                return;
+            }
+
+            var existingUser = Users.FirstOrDefault(u => u.Id == _selectedUser?.Id);
+            if (existingUser != null)
+            {
+                DeleteExistingUser(existingUser);
+                UpdateUserDetails(existingUser);
+                ResetDefaultElementStates();
+            }
+        }
+        
         private void UpdateUserDetails(User existingUser)
         {
             var userDetails = GetUserDetails(existingUser);
@@ -276,7 +329,7 @@ namespace wpfFeladatok.ViewModels
         private void HandleSelect(User? user)
         {
             IsAddUserEnabled = false;
-            IsSaveUserEnabled = true;
+            IsSaveAndDeleteUserEnabled = true;
             FirstName = user?.FirstName;
             LastName = user?.LastName;
             _selectedUser = user;
@@ -321,6 +374,11 @@ namespace wpfFeladatok.ViewModels
         {
             existingUser.FirstName = FirstName ?? "";
             existingUser.LastName = LastName ?? "";
+        }
+        
+        private void DeleteExistingUser(User existingUser)
+        {
+            Users.Remove(existingUser);
         }
         
         private void ResetDefaultElementStates(object? obj = null)
@@ -383,13 +441,12 @@ namespace wpfFeladatok.ViewModels
         {
             LoginStatus = status;
         }
-        
-        private void ToggleThemes(object obj)
+
+        private void HandleThemeChange(ThemeEnum theme)
         {
-            if (obj is bool isLightTheme)
-            {
-                SetTheme(isLightTheme);
-            }
+            Application.Current.Resources.MergedDictionaries.Clear();
+            LoadResourceDictionary($"/Resources/Themes/{theme}/ColorResources.xaml");
+            LoadResourceDictionary("/Resources/Themes/ImageResources.xaml");
         }
         
         private void HandleError(Exception ex)
@@ -402,15 +459,7 @@ namespace wpfFeladatok.ViewModels
             IsUserDetailsErrorMessageVisible = false;
             IsUserInputErrorMessageVisible = false;
             IsAddUserEnabled = true;
-            IsSaveUserEnabled = false;
-        }
-
-        private void SetTheme(bool isLightTheme)
-        {
-            var theme = isLightTheme ? "Light" : "Dark";
-            Application.Current.Resources.MergedDictionaries.Clear();
-            LoadResourceDictionary($"/Resources/Themes/{theme}/ColorResources.xaml");
-            LoadResourceDictionary("/Resources/Themes/ImageResources.xaml");
+            IsSaveAndDeleteUserEnabled = false;
         }
         
         private void LoadResourceDictionary(string resourcePath)
