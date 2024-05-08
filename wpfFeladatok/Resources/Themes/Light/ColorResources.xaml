@@ -3,12 +3,12 @@
     <Color x:Key="WindowBackgroundColor">#FFFFFF</Color>
     <Color x:Key="WindowBackgroundAnimationColorPrimary">#FFFFFF</Color>
     <Color x:Key="WindowBackgroundAnimationColorSecondary">#F0F0F0</Color>
-    <SolidColorBrush x:Key="ControlsBackgroundColor" Color="#FFF5E4"/>
-    <SolidColorBrush x:Key="ButtonBackgroundColor" Color="#FFE3E1"/>
-    <SolidColorBrush x:Key="ButtonHoverColor" Color="#FFD1D1"/>
+    <SolidColorBrush x:Key="ControlsBackgroundColor" Color="#FFFBDA"/>
+    <SolidColorBrush x:Key="ButtonBackgroundColor" Color="#F9F5E7"/>
+    <SolidColorBrush x:Key="ButtonHoverColor" Color="#F8EAD8"/>
     <SolidColorBrush x:Key="ButtonDisabledColor" Color="#999999"/>
-    <SolidColorBrush x:Key="ButtonCheckedColor" Color="#FF9494"/>
-    <SolidColorBrush x:Key="ButtonCheckedHoverColor" Color="#F38181"/>
+    <SolidColorBrush x:Key="ButtonCheckedColor" Color="#FFE7CC"/>
+    <SolidColorBrush x:Key="ButtonCheckedHoverColor" Color="#F8CBA6"/>
     <SolidColorBrush x:Key="TextColorSecondary" Color="#000"/>
     <SolidColorBrush x:Key="TextColorPrimary" Color="#000"/>
     <SolidColorBrush x:Key="TextColorError" Color="#FA4659"/>
