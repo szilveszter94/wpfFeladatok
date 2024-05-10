@@ -4,7 +4,7 @@ using System.Windows;
 
 namespace wpfFeladatok.ViewModels
 {
-    public class BaseViewModel : Window, INotifyPropertyChanged
+    public class BaseViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
