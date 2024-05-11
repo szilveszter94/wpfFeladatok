@@ -1,100 +1,113 @@
-﻿using System.Windows;
-using System.Windows.Input;
+﻿using System.ComponentModel;
+using System.Windows;
 using wpfFeladatok.Service;
 
-namespace wpfFeladatok.ViewModels
-{
-    public class MainWindowViewModel : BaseViewModel
-    {
-        private string _textContent = "";
-        private bool _isPopupActive;
-        public ICommand ShowMessage { get; }
-        public ICommand ShowLoginWindow { get; }
-        
-        private string _status = "";
+namespace wpfFeladatok.ViewModels;
 
-        public string Status
+public class MainWindowViewModel : BaseViewModel
+{
+    public RelayCommand ShowMessage { get; }
+    public RelayCommand ShowLoginWindow { get; }
+    private string _textContent = "";
+    private bool _isPopupActive;
+    private bool _isClosedByUser;
+    private readonly AuthenticationService _authenticationService;
+    private readonly LoginViewModel _loginViewModel;
+    private LoginWindow? _loginWindow;
+    
+    private bool? _loginStatus;
+    public bool? LoginStatus
+    {
+        get => _loginStatus;
+        set
         {
-            get { return _status; }
-            set
+            _loginStatus = value;
+            OnPropertyChanged();
+        }
+    }
+    
+    public string TextContent
+    {
+        get { return _textContent; }
+        set
+        {
+            if (_textContent != value)
             {
-                _status = value;
+                _textContent = value;
                 OnPropertyChanged();
             }
         }
-        
-        public string TextContent
+    }
+
+    public bool IsPopupActive
+    {
+        get { return _isPopupActive; }
+        set
         {
-            get { return _textContent; }
-            set
+            if (_isPopupActive != value)
             {
-                if (_textContent != value)
-                {
-                    _textContent = value;
-                    OnPropertyChanged();
-                }
+                _isPopupActive = value;
+                OnPropertyChanged();
+                ShowMessage.RaiseCanExecuteChanged();
+                ShowLoginWindow.RaiseCanExecuteChanged();
             }
         }
+    }
+    
+    public MainWindowViewModel()
+    {
+        ShowMessage = new RelayCommand(ShowMessageAction, _ => !IsPopupActive);
+        ShowLoginWindow = new RelayCommand(ShowLoginView, _ => !IsPopupActive);
+        _authenticationService = new AuthenticationService();
+        _loginViewModel = new LoginViewModel(_authenticationService);
+        _loginViewModel.IsLoginWindowClosed += IsClosedByUser;
+        _authenticationService.IsLoggedInChanged += AuthenticationService_IsLoggedInChanged;
+        LoginStatus = _authenticationService.IsLoggedIn;
+    }
 
-        public bool IsPopupActive
+    private void ShowMessageAction(object obj)
+    {
+        MessageBox.Show("Operation has completed successfully");
+    }
+    
+    private void ShowLoginView(object obj)
+    {
+        try
         {
-            get { return _isPopupActive; }
-            set
+            _loginWindow = new LoginWindow(_loginViewModel);
+            _loginWindow.Closing += LoginWindow_Closed;
+            var mainWindow = Application.Current.MainWindow;
+            if (mainWindow != null)
             {
-                if (_isPopupActive != value)
-                {
-                    _isPopupActive = value;
-                    OnPropertyChanged();
-                }
+                _loginWindow.Owner = mainWindow;
+                _loginWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             }
+            _loginWindow.ShowDialog();
         }
-        
-
-        public MainWindowViewModel()
+        catch (Exception ex)
         {
-            ShowMessage = new RelayCommand(ShowMessageAction(), CanShowMessage);
-            ShowLoginWindow = new RelayCommand(ShowLoginView(), CanShowMessage);
-            Mediator.Mediator.LoginStatusChanged += UpdateStatus;
+            MessageBox.Show($"Error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
-
-        private Action<object?> ShowMessageAction()
+    }
+    
+    private void AuthenticationService_IsLoggedInChanged(object? sender, bool? e)
+    {
+        LoginStatus = e;
+    }
+    
+    private void LoginWindow_Closed(object? sender, CancelEventArgs e)
+    {
+        if (!_isClosedByUser)
         {
-            return (obj) => MessageBox.Show("Operation has completed successfully");
+            LoginStatus = false;
         }
-        
-        private Action<object?> ShowLoginView()
-        {
-            return (obj) =>
-            {
-                try
-                {
-                    var loginViewModel = new LoginViewModel();
-                    var loginWindow = new LoginWindow(loginViewModel);
-
-                    var mainWindow = Application.Current.MainWindow;
-                    if (mainWindow != null)
-                    {
-                        loginWindow.Owner = mainWindow;
-                        loginWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                    }
-
-                    loginWindow.ShowDialog();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            };
-        }
-
-        private bool CanShowMessage(object? parameter)
-        {
-            return !_isPopupActive;
-        }
-        
-        private void UpdateStatus(string status)
-        {
-            Status = status;
-        }
+    }
+    
+    private void IsClosedByUser(object? sender, EventArgs e)
+    {
+        LoginStatus = true;
+        _isClosedByUser = true;
+        _loginWindow?.Close();
+        _isClosedByUser = false;
     }
 }

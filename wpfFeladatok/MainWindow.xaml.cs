@@ -1,20 +1,13 @@
-﻿using System.ComponentModel;
-using System.Globalization;
-using System.Runtime.CompilerServices;
-using System.Windows;
+﻿using System.Windows;
 using wpfFeladatok.ViewModels;
 
-namespace wpfFeladatok
+namespace wpfFeladatok;
+
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    public MainWindow()
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-            DataContext = new MainWindowViewModel();
-        }
+        InitializeComponent();
+        DataContext = new MainWindowViewModel();
     }
 }

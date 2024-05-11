@@ -12,6 +12,7 @@
     <Window.Resources>
         <converter:NotNullOrEmptyToVisibilityConverter x:Key="NotNullOrEmptyToVisibilityConverter"/>
         <converter:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+        <converter:BooleanOrNullConverterToLoginStatus x:Key="BooleanOrNullConverterToLoginStatus" />
         <converter:BooleanConverterToOpenClosedText x:Key="BooleanConverterToOpenClosedText"/>
     </Window.Resources>
     <Grid>
@@ -45,8 +46,8 @@
                     <TextBlock Padding="5" VerticalAlignment="Center" Text="{Binding TextContent}" />
                 </StackPanel>
             </Label>
-            <Button IsEnabled="{Binding IsPopupActive, Converter={StaticResource InverseBooleanConverter}}" Command="{Binding ShowMessage}" Content="Show Message" Margin="10 10 5 0" Grid.Column="0" Grid.Row="1" />
-            <Button IsEnabled="{Binding IsPopupActive, Converter={StaticResource InverseBooleanConverter}}" Command="{Binding  ShowLoginWindow}" Content="Login" Margin="5 10 5 0" Grid.Column="1" Grid.Row="1" />
+            <Button Command="{Binding ShowMessage}" Content="Show Message" Margin="10 10 5 0" Grid.Column="0" Grid.Row="1" />
+            <Button Command="{Binding  ShowLoginWindow}" Content="Login" Margin="5 10 5 0" Grid.Column="1" Grid.Row="1" />
             <Grid Margin="5 10 10 0" Grid.Column="2" Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -65,7 +66,7 @@
         </Grid>
         <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="1">
         <Grid  Height="40" HorizontalAlignment="Stretch">
-            <TextBlock Text="{Binding Status}" Padding="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding LoginStatus, Converter={StaticResource BooleanOrNullConverterToLoginStatus}}" Padding="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
         </Grid>
         </Border>
         <Popup Grid.Row="0" IsOpen="{Binding IsPopupActive}" PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=Window}}" Placement="Center">
