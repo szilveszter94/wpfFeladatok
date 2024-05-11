@@ -1,14 +1,7 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Windows;
+﻿using System.Windows;
 
-namespace wpfFeladatok
-{
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
+namespace wpfFeladatok;
+
     public partial class App : Application
     {
     }
-
-}

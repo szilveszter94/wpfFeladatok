@@ -12,6 +12,7 @@
     <Window.Resources>
         <converter:NotNullOrEmptyToVisibilityConverter x:Key="NotNullOrEmptyToVisibilityConverter"/>
         <converter:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+        <converter:BooleanOrNullConverterToLoginStatus x:Key="BooleanOrNullConverterToLoginStatus"/>
         <converter:BooleanConverterToOpenClosedText x:Key="BooleanConverterToOpenClosedText"/>
         <converter:RgbToColorConverter x:Key="RgbToColorConverter" />
         <converter:RgbToThicknessConverter x:Key="RgbToThicknessConverter" />
@@ -255,20 +256,20 @@
                 <RowDefinition Height="2*" />
                 <RowDefinition Height="8*" />
             </Grid.RowDefinitions>
-            <TextBox Foreground="{DynamicResource TextColorPrimary}" Background="{DynamicResource ControlsBackgroundColor}" Margin="10 0 5 0" VerticalContentAlignment="Center" Text="{Binding TextContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="5" Grid.Row="0" Grid.Column="0" BorderBrush="Gray" BorderThickness="1" />
+            <TextBox Foreground="{DynamicResource TextColorPrimary}" Background="{DynamicResource ControlsBackgroundColor}" Margin="10 0 5 0" VerticalContentAlignment="Center" Text="{Binding TopInputFieldTextContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="5" Grid.Row="0" Grid.Column="0" BorderBrush="Gray" BorderThickness="1" />
             <Border Background="{DynamicResource ControlsBackgroundColor}" Margin="5 0 5 0" Grid.Row="0" Grid.Column="1" BorderBrush="Gray" BorderThickness="1">
-                <TextBlock Foreground="{DynamicResource TextColorPrimary}" Padding="5" VerticalAlignment="Center" Text="{Binding TextContent}" />
+                <TextBlock Foreground="{DynamicResource TextColorPrimary}" Padding="5" VerticalAlignment="Center" Text="{Binding TopInputFieldTextContent}" />
             </Border>
             <Label Background="{DynamicResource ControlsBackgroundColor}" Margin="5 0 10 0" Grid.Row="0" Grid.Column="2" BorderBrush="Gray" BorderThickness="1">
                 <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-                    <Image Source="{DynamicResource ImageUrl}" Visibility="{Binding TextContent, Converter={StaticResource NotNullOrEmptyToVisibilityConverter}}">
+                    <Image Source="{DynamicResource ImageUrl}" Visibility="{Binding TopInputFieldTextContent, Converter={StaticResource NotNullOrEmptyToVisibilityConverter}}">
                         <Image.ToolTip>
                             <ToolTip>
-                                <TextBlock Text="{Binding TextContent}" />
+                                <TextBlock Text="{Binding TopInputFieldTextContent}" />
                             </ToolTip>
                         </Image.ToolTip>
                     </Image>
-                    <TextBlock Foreground="{DynamicResource TextColorPrimary}" Padding="5" VerticalAlignment="Center" Text="{Binding TextContent}" />
+                    <TextBlock Foreground="{DynamicResource TextColorPrimary}" Padding="5" VerticalAlignment="Center" Text="{Binding TopInputFieldTextContent}" />
                 </StackPanel>
             </Label>
             <Button Style="{StaticResource DefaultButtonStyle}" IsEnabled="{Binding IsPopupActive, Converter={StaticResource InverseBooleanConverter}}" Command="{Binding ShowMessageCommand}" Content="Show Message" Margin="10 10 5 0" Grid.Column="0" Grid.Row="1" />
@@ -439,7 +440,7 @@
                 </MultiBinding>
             </Border.BorderThickness>
             <Grid Height="40" HorizontalAlignment="Stretch">
-                <TextBlock Foreground="{DynamicResource TextColorSecondary}" Text="{Binding LoginStatus}" Padding="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <TextBlock Foreground="{DynamicResource TextColorSecondary}" Text="{Binding LoginStatus, Converter={StaticResource BooleanOrNullConverterToLoginStatus}}" Padding="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 <TextBlock Foreground="{DynamicResource TextColorSecondary}" Text="{Binding CurrentTime, StringFormat={}Current time: {0:yyyy-MM-dd HH:mm:ss}}" Padding="5" HorizontalAlignment="Right" VerticalAlignment="Center"/>
             </Grid>
         </Border>

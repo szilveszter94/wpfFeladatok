@@ -1,56 +1,61 @@
+using System.Windows;
+using wpfFeladatok.Service;
+
 namespace wpfFeladatok.ViewModels;
-
-using Mediator;
-using System.Windows.Input;
-using Service;
-
 
 public class LoginViewModel : BaseViewModel
 {
-    public ICommand CheckLogin { get; }
-    public Action? CloseAction { get; set; }
-    public Action? ClearLoginFieldsAction { get; set; }
-    public string? ActualUserName { get; set; }
-    public string? ActualPassword { get; set; }
+    public event EventHandler? IsLoginWindowClosed;
+    public RelayCommand CheckLogin { get; }
     
-    private const string TestUserName = "Admin";
-    private const string TestPassword = "Admin123";
+    private readonly AuthenticationService _authenticationService;
     private bool _isErrorVisible;
-    private string _loginLoginStatus = "";
-    
-    public string LoginStatus
-    {
-        get => _loginLoginStatus;
-        set
-        {
-            SetProperty(ref _loginLoginStatus, value);
-            Mediator.NotifyLoginStatusChanged(value);
-        }
-    }
-
     public bool IsErrorVisible
     {
         get => _isErrorVisible;
         set => SetProperty(ref _isErrorVisible, value);
     }
 
-    public LoginViewModel()
+    public LoginViewModel(AuthenticationService authenticationService)
     {
+        _authenticationService = authenticationService;
         CheckLogin = new RelayCommand(ExecuteCheckLogin);
     }
     
     private void ExecuteCheckLogin(object parameter)
     {
-        if (ActualUserName == TestUserName && ActualPassword == TestPassword)
+        var loginWindow = GetLoginWindow();
+        var isLoginSuccessful = _authenticationService.Login(loginWindow);
+        if (isLoginSuccessful)
         {
-            IsErrorVisible = false;
-            CloseAction?.Invoke();
+            HandleSuccessfulLogin();
+            return;
         }
-        else
-        {
-            ClearLoginFieldsAction?.Invoke();
-            LoginStatus = "Login failed!";
-            IsErrorVisible = true;
-        }
+        HandleUnsuccessfulLogin();
+    }
+
+    private void HandleSuccessfulLogin()
+    {
+        IsErrorVisible = false;
+        OnIsLoginWindowClosed();
+    }
+    
+    private void HandleUnsuccessfulLogin()
+    {
+        var loginWindow = GetLoginWindow();
+        loginWindow.LoginBox.Clear();
+        loginWindow.PasswordBox.Clear();
+        IsErrorVisible = true;
+    }
+
+    private LoginWindow GetLoginWindow()
+    {
+        return Application.Current.Windows.OfType
+            <LoginWindow>().SingleOrDefault(x => x.IsActive)!;
+    }
+    
+    private void OnIsLoginWindowClosed()
+    {
+        IsLoginWindowClosed?.Invoke(null, EventArgs.Empty);
     }
 }
