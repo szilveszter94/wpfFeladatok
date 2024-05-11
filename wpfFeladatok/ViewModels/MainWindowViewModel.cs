@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using wpfFeladatok.Service;
@@ -8,26 +9,29 @@ namespace wpfFeladatok.ViewModels
     public class MainWindowViewModel : BaseViewModel
     {
         private string _textContent = "";
+        private bool _isPopupActive;
+        private bool _isClosedByUser;
+        private readonly AuthenticationService _authenticationService;
+        private readonly LoginViewModel _loginViewModel;
+        private LoginWindow? _loginWindow;
+        
         private bool _isAnimationCheckBoxChecked;
         private bool _isThemeChangeEnableCheckBoxChecked;
-        private bool _isPopupActive;
         private bool _isSwitchThemeEnabled;
         private DateTime _currentTime = DateTime.Now;
         private DispatcherTimer _timer;
-        public ICommand ShowMessage { get; }
-        public ICommand ShowLoginWindow { get; }
+        public RelayCommand ShowMessage { get; }
+        public RelayCommand ShowLoginWindow { get; }
+        public RelayCommand SwitchTheme { get; }
         
-        public ICommand SwitchTheme { get; }
         
-        
-        private string _status = "";
-
-        public string Status
+        private bool? _loginStatus;
+        public bool? LoginStatus
         {
-            get { return _status; }
+            get => _loginStatus;
             set
             {
-                _status = value;
+                _loginStatus = value;
                 OnPropertyChanged();
             }
         }
@@ -118,19 +122,25 @@ namespace wpfFeladatok.ViewModels
                 {
                     _isPopupActive = value;
                     OnPropertyChanged();
+                    ShowMessage.RaiseCanExecuteChanged();
+                    ShowLoginWindow.RaiseCanExecuteChanged();
                 }
             }
         }
         
         public MainWindowViewModel()
         {
+            ShowMessage = new RelayCommand(ShowMessageAction, _ => !IsPopupActive);
+            ShowLoginWindow = new RelayCommand(ShowLoginView, _ => !IsPopupActive);
+            _authenticationService = new AuthenticationService();
+            _loginViewModel = new LoginViewModel(_authenticationService);
+            _loginViewModel.IsLoginWindowClosed += IsClosedByUser;
+            _authenticationService.IsLoggedInChanged += AuthenticationService_IsLoggedInChanged;
+            LoginStatus = _authenticationService.IsLoggedIn;
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromSeconds(1);
             _timer.Tick += Timer_Tick;
             _timer.Start();
-            ShowMessage = new RelayCommand(ShowMessageAction(), CanShowMessage);
-            ShowLoginWindow = new RelayCommand(ShowLoginView(), CanShowMessage);
-            Mediator.Mediator.LoginStatusChanged += UpdateStatus;
             SwitchTheme = new RelayCommand(ToggleThemes);
         }
 
@@ -139,44 +149,29 @@ namespace wpfFeladatok.ViewModels
             CurrentTime = DateTime.Now;
         }
         
-        private Action<object?> ShowMessageAction()
+        private void ShowMessageAction(object obj)
         {
-            return (obj) => MessageBox.Show("Operation has completed successfully");
+            MessageBox.Show("Operation has completed successfully");
         }
-        
-        private Action<object?> ShowLoginView()
+    
+        private void ShowLoginView(object obj)
         {
-            return (obj) =>
+            try
             {
-                try
+                _loginWindow = new LoginWindow(_loginViewModel);
+                _loginWindow.Closing += LoginWindow_Closed;
+                var mainWindow = Application.Current.MainWindow;
+                if (mainWindow != null)
                 {
-                    var loginViewModel = new LoginViewModel();
-                    var loginWindow = new LoginWindow(loginViewModel);
-
-                    var mainWindow = Application.Current.MainWindow;
-                    if (mainWindow != null)
-                    {
-                        loginWindow.Owner = mainWindow;
-                        loginWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                    }
-
-                    loginWindow.ShowDialog();
+                    _loginWindow.Owner = mainWindow;
+                    _loginWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            };
-        }
-
-        private bool CanShowMessage(object? parameter)
-        {
-            return !_isPopupActive;
-        }
-        
-        private void UpdateStatus(string status)
-        {
-            Status = status;
+                _loginWindow.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         
         public void ToggleThemes(object obj)
@@ -192,6 +187,27 @@ namespace wpfFeladatok.ViewModels
                 Application.Current.Resources.MergedDictionaries.Add(resourceDict);
                 Application.Current.Resources.MergedDictionaries.Add(resourceDict2);
             }
+        }
+        
+        private void AuthenticationService_IsLoggedInChanged(object? sender, bool? e)
+        {
+            LoginStatus = e;
+        }
+    
+        private void LoginWindow_Closed(object? sender, CancelEventArgs e)
+        {
+            if (!_isClosedByUser)
+            {
+                LoginStatus = false;
+            }
+        }
+    
+        private void IsClosedByUser(object? sender, EventArgs e)
+        {
+            LoginStatus = true;
+            _isClosedByUser = true;
+            _loginWindow?.Close();
+            _isClosedByUser = false;
         }
     }
 }
