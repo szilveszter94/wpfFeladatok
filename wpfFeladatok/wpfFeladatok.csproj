@@ -24,7 +24,23 @@
       <SubType>Designer</SubType>
     </Resource>
     <Page Remove="Resources\Themes\Light\ColorResources.xaml" />
+    <Resource Include="Resources\Themes\Black\ColorResources.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Page Remove="Resources\Themes\Ocean\ColorResources.xaml" />
+    <Resource Include="Resources\Themes\Sunny\ColorResources.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Page Remove="Resources\Themes\Midnight\ColorResources.xaml" />
     <Resource Include="Resources\Themes\Light\ColorResources.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Page Remove="Resources\Themes\Teal\ColorResources.xaml" />
+    <Resource Include="Resources\Themes\Teal\ColorResources.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Page Remove="Resources\Themes\Coffee\ColorResources.xaml" />
+    <Resource Include="Resources\Themes\Coffee\ColorResources.xaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

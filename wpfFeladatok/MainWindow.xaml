@@ -12,6 +12,7 @@
     <Window.Resources>
         <converter:NotNullOrEmptyToVisibilityConverter x:Key="NotNullOrEmptyToVisibilityConverter"/>
         <converter:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+        <converter:BooleanOrNullConverterToLoginStatus x:Key="BooleanOrNullConverterToLoginStatus"/>
         <converter:BooleanConverterToOpenClosedText x:Key="BooleanConverterToOpenClosedText"/>
         <converter:RgbToColorConverter x:Key="RgbToColorConverter" />
         <converter:RgbToThicknessConverter x:Key="RgbToThicknessConverter" />
@@ -79,6 +80,159 @@
         </Setter.Value>
     </Setter>
         </Style>
+        <Style x:Key="ComboBoxItemStyle" TargetType="{x:Type ComboBoxItem}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ComboBoxItem}">
+                        <Border x:Name="myBorder">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="myBorder" Property="Background" Value="{DynamicResource ButtonCheckedColor}" />
+                                <Setter TargetName="myBorder" Property="TextBlock.Foreground" Value="{DynamicResource TextColorSecondary}" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="myBorder" Property="Background" Value="{DynamicResource ButtonHoverColor}" />
+                                <Setter TargetName="myBorder" Property="TextBlock.Foreground" Value="{DynamicResource TextColorSecondary}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers> 
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="20" />
+            </Grid.ColumnDefinitions>
+            <Border
+                  x:Name="Border" 
+                  Grid.ColumnSpan="2"
+                  CornerRadius="5"
+                  Background="{DynamicResource ControlsBackgroundColor}"
+                  BorderBrush="{DynamicResource TextColorPrimary}"
+                   />
+            <Border x:Name="BorderBg"
+                  Grid.Column="0"
+                  CornerRadius="5 0 0 5" 
+                  Margin="1" 
+                  Background="{DynamicResource ButtonBackgroundColor}" 
+                   />
+            <Path 
+                  x:Name="Arrow"
+                  Grid.Column="1"     
+                  Fill="{DynamicResource  TextColorPrimary}"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  Data="M0,0 L0,2 L4,6 L8,2 L8,0 L4,4 z"
+                />
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="ToggleButton.IsMouseOver" Value="true">
+                <Setter TargetName="Border" Property="Background" Value="{DynamicResource ButtonHoverColor}" />
+                <Setter TargetName="Arrow" Property="Fill" Value="{DynamicResource TextColorSecondary}" />
+            </Trigger>
+            <Trigger Property="ToggleButton.IsChecked" Value="true">
+                <Setter TargetName="Border" Property="Background" Value="{DynamicResource ButtonCheckedColor}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="BorderBg" Property="Background" Value="{DynamicResource ButtonDisabledColor}" />
+                <Setter TargetName="Border" Property="Background" Value="{DynamicResource ButtonDisabledColor}" />
+                <Setter Property="Foreground" Value="{DynamicResource TextColorSecondary}"/>
+                <Setter TargetName="Arrow" Property="Fill" Value="{DynamicResource TextColorSecondary}" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="ComboBoxTextBox" TargetType="{x:Type TextBox}">
+        <Border x:Name="PART_ContentHost" Focusable="False" Background="{TemplateBinding Background}" />
+    </ControlTemplate>
+
+    <Style x:Key="ComboBoxStyle" TargetType="{x:Type ComboBox}">
+        <Setter Property="SnapsToDevicePixels" Value="true"/>
+        <Setter Property="OverridesDefaultStyle" Value="true"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
+        <Setter Property="MinWidth" Value="120"/>
+        <Setter Property="MinHeight" Value="20"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextColorPrimary}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ComboBox}">
+                    <Grid>
+                        <ToggleButton 
+                            Name="ToggleButton" 
+                            Template="{StaticResource ComboBoxToggleButton}"
+                            Focusable="false"
+                            IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}"
+                            ClickMode="Press">
+                        </ToggleButton>
+                        <ContentPresenter Name="ContentSite" IsHitTestVisible="False"  Content="{TemplateBinding SelectionBoxItem}"
+                            ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                            ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                            Margin="3,3,23,3"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Left" />
+                        <TextBox x:Name="PART_EditableTextBox"
+                            Style="{x:Null}" 
+                            Template="{StaticResource ComboBoxTextBox}" 
+                            HorizontalAlignment="Left" 
+                            VerticalAlignment="Center" 
+                            Margin="3,3,23,3"
+                            Focusable="True" 
+                            Background="{DynamicResource ControlsBackgroundColor}"
+                            Foreground="{DynamicResource TextColorPrimary}"
+                            Visibility="Hidden"
+                            IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                        <Popup 
+                            Name="Popup"
+                            Placement="Bottom"
+                            IsOpen="{TemplateBinding IsDropDownOpen}"
+                            AllowsTransparency="True" 
+                            Focusable="False"
+                            PopupAnimation="Slide">
+
+                            <Grid Name="DropDown"
+                              SnapsToDevicePixels="True"                
+                              MinWidth="{TemplateBinding ActualWidth}"
+                              MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                <Border 
+                                x:Name="DropDownBorder"
+                                Background="{DynamicResource ButtonBackgroundColor}"
+                                BorderThickness="1"
+                                BorderBrush="{DynamicResource ButtonDisabledColor}"/>
+                                <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
+                                    <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
+                                </ScrollViewer>
+                            </Grid>
+                        </Popup>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="HasItems" Value="True">
+                            <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95"/>
+                        </Trigger>
+                        <Trigger Property="IsGrouping" Value="False">
+                            <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+                        </Trigger>
+                        <Trigger SourceName="Popup" Property="Popup.AllowsTransparency" Value="True">
+                            <Setter TargetName="DropDownBorder" Property="CornerRadius" Value="0"/>
+                            <Setter TargetName="DropDownBorder" Property="Margin" Value="0,2,0,0"/>
+                        </Trigger>
+                        <Trigger Property="IsEditable"  Value="True">
+                            <Setter Property="IsTabStop" Value="False"/>
+                            <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
+                            <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+        </Style.Triggers>
+    </Style>
     </Window.Resources>
     <Window.Background>
         <SolidColorBrush Color="{DynamicResource WindowBackgroundColor}"/>
@@ -102,20 +256,20 @@
                 <RowDefinition Height="2*" />
                 <RowDefinition Height="8*" />
             </Grid.RowDefinitions>
-            <TextBox Foreground="{DynamicResource TextColorPrimary}" Background="{DynamicResource ControlsBackgroundColor}" Margin="10 0 5 0" VerticalContentAlignment="Center" Text="{Binding TextContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="5" Grid.Row="0" Grid.Column="0" BorderBrush="Gray" BorderThickness="1" />
+            <TextBox Foreground="{DynamicResource TextColorPrimary}" Background="{DynamicResource ControlsBackgroundColor}" Margin="10 0 5 0" VerticalContentAlignment="Center" Text="{Binding TopInputFieldTextContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="5" Grid.Row="0" Grid.Column="0" BorderBrush="Gray" BorderThickness="1" />
             <Border Background="{DynamicResource ControlsBackgroundColor}" Margin="5 0 5 0" Grid.Row="0" Grid.Column="1" BorderBrush="Gray" BorderThickness="1">
-                <TextBlock Foreground="{DynamicResource TextColorPrimary}" Padding="5" VerticalAlignment="Center" Text="{Binding TextContent}" />
+                <TextBlock Foreground="{DynamicResource TextColorPrimary}" Padding="5" VerticalAlignment="Center" Text="{Binding TopInputFieldTextContent}" />
             </Border>
             <Label Background="{DynamicResource ControlsBackgroundColor}" Margin="5 0 10 0" Grid.Row="0" Grid.Column="2" BorderBrush="Gray" BorderThickness="1">
                 <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-                    <Image Source="{DynamicResource ImageUrl}" Visibility="{Binding TextContent, Converter={StaticResource NotNullOrEmptyToVisibilityConverter}}">
+                    <Image Source="{DynamicResource ImageUrl}" Visibility="{Binding TopInputFieldTextContent, Converter={StaticResource NotNullOrEmptyToVisibilityConverter}}">
                         <Image.ToolTip>
                             <ToolTip>
-                                <TextBlock Text="{Binding TextContent}" />
+                                <TextBlock Text="{Binding TopInputFieldTextContent}" />
                             </ToolTip>
                         </Image.ToolTip>
                     </Image>
-                    <TextBlock Foreground="{DynamicResource TextColorPrimary}" Padding="5" VerticalAlignment="Center" Text="{Binding TextContent}" />
+                    <TextBlock Foreground="{DynamicResource TextColorPrimary}" Padding="5" VerticalAlignment="Center" Text="{Binding TopInputFieldTextContent}" />
                 </StackPanel>
             </Label>
             <Button Style="{StaticResource DefaultButtonStyle}" IsEnabled="{Binding IsPopupActive, Converter={StaticResource InverseBooleanConverter}}" Command="{Binding ShowMessageCommand}" Content="Show Message" Margin="10 10 5 0" Grid.Column="0" Grid.Row="1" />
@@ -146,8 +300,15 @@
                 </CheckBox.Triggers>
             </CheckBox>
             <CheckBox Foreground="{DynamicResource TextColorSecondary}" IsChecked="{Binding IsThemeChangeEnableCheckBoxChecked}" VerticalAlignment="Center" Content="Enable theme switching" Margin="5" Grid.Row="2" Grid.Column="1" />
-            <CheckBox Foreground="{DynamicResource TextColorSecondary}" Command="{Binding SwitchThemeCommand}"
-                      CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}" IsEnabled="{Binding IsSwitchThemeEnabled}" VerticalAlignment="Center" Content="Switch theme" Margin="5" Grid.Row="2" Grid.Column="2" />
+            <Grid Margin="5 5 10 5" Grid.Row="2" Grid.Column="2" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"></ColumnDefinition>
+                    <ColumnDefinition Width="4*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock VerticalAlignment="Center" Grid.Column="0" Foreground="{DynamicResource TextColorSecondary}" Text="Select theme"/>
+                <ComboBox Style="{StaticResource ComboBoxStyle}" SelectedItem="{Binding SelectedTheme, Mode=TwoWay}" Grid.Column="1" ItemsSource="{Binding ThemeOptions}" ItemContainerStyle="{StaticResource ComboBoxItemStyle}"
+                          IsEnabled="{Binding IsSwitchThemeEnabled}" VerticalAlignment="Center"/>
+            </Grid>
             <Grid Margin="10 0 5 0" Grid.Row="3" Grid.Column="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
@@ -233,10 +394,12 @@
                             <ColumnDefinition Width="3*"></ColumnDefinition>
                             <ColumnDefinition Width="3*"></ColumnDefinition>
                             <ColumnDefinition Width="3*"></ColumnDefinition>
+                            <ColumnDefinition Width="3*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <Button Style="{StaticResource DefaultButtonStyle}" IsEnabled="{Binding IsAddUserEnabled}" Grid.Column="0" HorizontalAlignment="Stretch" Command="{Binding AddNewUserCommand}" Content="Add" Margin="0 5 2 0" />
-                        <Button Style="{StaticResource DefaultButtonStyle}" IsEnabled="{Binding IsSaveUserEnabled}" Grid.Column="1" HorizontalAlignment="Stretch" Command="{Binding SaveUserCommand}" Content="Save" Margin="2 5 2 0" />
-                        <Button Style="{StaticResource DefaultButtonStyle}" Grid.Column="2" HorizontalAlignment="Stretch" Command="{Binding CancelCommand}" Content="Cancel" Margin="2 5 0 0" />
+                        <Button Style="{StaticResource DefaultButtonStyle}" IsEnabled="{Binding IsSaveAndDeleteUserEnabled}" Grid.Column="1" HorizontalAlignment="Stretch" Command="{Binding SaveUserCommand}" Content="Save" Margin="2 5 2 0" />
+                        <Button Style="{StaticResource DefaultButtonStyle}" IsEnabled="{Binding IsSaveAndDeleteUserEnabled}" Grid.Column="2" HorizontalAlignment="Stretch" Command="{Binding DeleteUserCommand}" Content="Delete" Margin="2 5 2 0" />
+                        <Button Style="{StaticResource DefaultButtonStyle}" Grid.Column="3" HorizontalAlignment="Stretch" Command="{Binding CancelCommand}" Content="Cancel" Margin="2 5 0 0" />
                     </Grid>
                 </Grid>
                 <TextBlock Visibility="{Binding IsUserInputErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0 0 0 10" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="{DynamicResource TextColorError}" Text="Please fill in both first name and last name!"></TextBlock>
@@ -277,7 +440,7 @@
                 </MultiBinding>
             </Border.BorderThickness>
             <Grid Height="40" HorizontalAlignment="Stretch">
-                <TextBlock Foreground="{DynamicResource TextColorSecondary}" Text="{Binding LoginStatus}" Padding="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <TextBlock Foreground="{DynamicResource TextColorSecondary}" Text="{Binding LoginStatus, Converter={StaticResource BooleanOrNullConverterToLoginStatus}}" Padding="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 <TextBlock Foreground="{DynamicResource TextColorSecondary}" Text="{Binding CurrentTime, StringFormat={}Current time: {0:yyyy-MM-dd HH:mm:ss}}" Padding="5" HorizontalAlignment="Right" VerticalAlignment="Center"/>
             </Grid>
         </Border>

@@ -2,22 +2,22 @@
 using System.Windows.Data;
 using System.Windows;
 
-namespace wpfFeladatok.Converters
-{
-    public class NotNullOrEmptyToVisibilityConverter : IValueConverter
-    {
-        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-        {
-            if (value is string str)
-            {
-                return string.IsNullOrEmpty(str) ? Visibility.Hidden : Visibility.Visible;
-            }
-            return Visibility.Hidden;
-        }
+namespace wpfFeladatok.Converters;
 
-        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+public class NotNullOrEmptyToVisibilityConverter : IValueConverter
+{
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is string str)
         {
-            throw new NotImplementedException();
+            return string.IsNullOrEmpty(str) ? Visibility.Hidden : Visibility.Visible;
         }
+        return Visibility.Hidden;
+    }
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
     }
 }
+
